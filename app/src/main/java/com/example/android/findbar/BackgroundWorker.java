@@ -227,6 +227,7 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
                 String FbID = params[1];
                 String User_Gender = params[2];
                 String relationshipStatus = params[3];
+                String UserAge= params[4];
 
                 URL url = new URL(enterUserDetailsURL);
                 HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
@@ -244,7 +245,8 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
 
                 String post_data = URLEncoder.encode("FbID", "UTF-8")+"="+ URLEncoder.encode(FbID, "UTF-8")+"&"
                         + URLEncoder.encode("User_Gender", "UTF-8")+"="+ URLEncoder.encode(User_Gender, "UTF-8")+"&"
-                        + URLEncoder.encode("UserRS", "UTF-8")+"="+ URLEncoder.encode(relationshipStatus, "UTF-8");
+                        + URLEncoder.encode("UserRS", "UTF-8")+"="+ URLEncoder.encode(relationshipStatus, "UTF-8")+"&"
+                        + URLEncoder.encode("UserAge", "UTF-8")+"="+ URLEncoder.encode(UserAge, "UTF-8");
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();
                 bufferedWriter.close();

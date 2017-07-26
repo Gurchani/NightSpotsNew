@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
         contentValues.put(FeederClass.FeedEntry.UserGender, User_Gender);
         contentValues.put(FeederClass.FeedEntry.UserAge, User_Age);
 
-        long result = db.insert(FeederClass.FeedEntry.Globals, null, contentValues);
+        long result = db.replace(FeederClass.FeedEntry.Globals, null, contentValues);
 
     }
 

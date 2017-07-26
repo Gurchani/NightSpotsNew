@@ -122,7 +122,7 @@ public class SingleOrNot extends AppCompatActivity {
          String type = "insertUserDetails";
 
         BackgroundWorker background = new BackgroundWorker(this);
-         background.execute(type, FbID , User_Gender , relationshipStatus );
+         background.execute(type, FbID , User_Gender , relationshipStatus, String.valueOf(User_Age));
         }
 
         Intent intent = new Intent(this, ProgressBarActivity.class);

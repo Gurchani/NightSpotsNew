@@ -376,14 +376,13 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
         if(GBU==2){
             mMap.addMarker(markerOptions).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.deadmarker));
         }
-
-
     }
 
     //DetemineGBU stands for finding out if a bar is Good, Bad or Ugly
     //If returned 0 its Good
     //if returned 1 its Bad
     //if returned 2 its Ugly
+
     private int DetermineGBU(int barRank, int TotalBars) {
         if (barRank <= TotalBars / 3) {
             return 0;
