@@ -209,9 +209,9 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return;
+//            return; have to un-comment
         }
-        mMap.setMyLocationEnabled(true);
+//        mMap.setMyLocationEnabled(true);
 
 
 
@@ -352,11 +352,11 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
         LatLng paris = new LatLng(lat, lng);
 
         //Invert the values
-        String snippet = "Single Boys: " + SingleBoys
+        String snippet = "Single Boys:      " + SingleBoys
                 + System.getProperty ("line.separator")
-                + "Single Girls: " + SingleGirls
+                + "Single Girls:      " + SingleGirls
                 + System.getProperty ("line.separator")
-                + "Pint Price: " + pintPrice
+                + "Pint Price:      " + pintPrice
                 ;
 
         MarkerOptions markerOptions = new MarkerOptions().position(paris).title(BarName).snippet(snippet);

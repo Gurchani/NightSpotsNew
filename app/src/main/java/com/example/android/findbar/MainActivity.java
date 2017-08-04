@@ -1,5 +1,9 @@
 package com.example.android.findbar;
 
+import android.content.pm.*;
+import java.security.MessageDigest;
+
+import android.util.Base64;
 
 import android.Manifest;
 import android.content.ContentValues;
@@ -83,8 +87,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Get_hash_key();
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         setContentView(R.layout.activity_main);
         textView = (TextView) findViewById(R.id.textView);
 
@@ -92,119 +98,153 @@ public class MainActivity extends AppCompatActivity {
          //getLocation();
 
         /*Facebook login related code*/
-        loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList("public_profile",  //Get Permissions from Facebook
-                "user_likes", "user_birthday" ));
-        AppEventsLogger.activateApp(this);
-        callbackManager = CallbackManager.Factory.create();
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if (false){
+            Log.d("Yahoo", "already logged in");
+            User_id = accessToken.getUserId();
+            //Actions to be taken after all the information about the user has been collected
+            insertPageData();
+            putInGlobals();
+            updateData(getCityCountry());
+            beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is inside a bar
+            goToSecondActivity();
+        }
+        else{
+            loginButton = (LoginButton) findViewById(R.id.login_button);
+            loginButton.setReadPermissions(Arrays.asList("public_profile",  //Get Permissions from Facebook
+                    "user_likes", "user_birthday" ));
+            AppEventsLogger.activateApp(this);
+            callbackManager = CallbackManager.Factory.create();
+            loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
 
-                final String[] afterString = {""};
-                final Boolean[] noData = {true};
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                StrictMode.setThreadPolicy(policy);
+                    final String[] afterString = {""};
+                    final Boolean[] noData = {true};
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
 
                 /*Graph Request for getting the list of Pages that User has liked*/
-                do {
-                    GraphRequest request = GraphRequest.newGraphPathRequest(
-                            AccessToken.getCurrentAccessToken(),
-                            "/me/likes",
-                            new GraphRequest.Callback() {
+                    do {
+                        GraphRequest request = GraphRequest.newGraphPathRequest(
+                                AccessToken.getCurrentAccessToken(),
+                                "/me/likes",
+                                new GraphRequest.Callback() {
+                                    @Override
+                                    public void onCompleted(GraphResponse response) {
+
+                                        try {
+                                            JSONObject jsonObject = response.getJSONObject();
+
+
+                                            if (jsonObject.length() > 1) {
+
+                                                JSONObject jsonFacebook = (JSONObject) new JSONTokener(jsonObject.toString()).nextValue();
+                                                JSONObject likes_paging = (JSONObject) new JSONTokener(jsonFacebook.getJSONObject("paging").toString()).nextValue();
+
+
+                                                for (int i = 0; i < jsonFacebook.getJSONArray("data").length(); i++) {
+                                                    likes.add(jsonFacebook.getJSONArray("data").getJSONObject(i).getString("name"));
+                                                    counter++;
+                                                }
+                                                afterString[0] = (String) likes_paging.getJSONObject("cursors").get("after");
+
+                                            } else {
+                                                noData[0] = false;
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+
+                        Bundle parameters = new Bundle();
+                        parameters.putString("pretty", "0");
+                        parameters.putString("limit", "100");
+                        parameters.putString("after", afterString[0]);
+                        request.setParameters(parameters);
+                        request.executeAndWait();
+                    } while (noData[0] == true);
+
+                /*Graph Request for getting Gender, User-Id and Birthday*/
+                    GraphRequest request2 = GraphRequest.newMeRequest(
+                            loginResult.getAccessToken(),
+                            new GraphRequest.GraphJSONObjectCallback() {
                                 @Override
-                                public void onCompleted(GraphResponse response) {
+                                public void onCompleted(JSONObject object, GraphResponse response) {
+                                    Log.v("Main", response.toString());
+                                    try {
+                                        User_Gender = object.getString("gender");
+
+                                    } catch (JSONException e) {
+                                        textView.setText("No Gender Specified");
+                                        e.printStackTrace();
+                                    }
 
                                     try {
-                                        JSONObject jsonObject = response.getJSONObject();
+                                        User_id = object.getString("id");
+                                        textView.setText(" " + User_id);
 
-
-                                        if (jsonObject.length() > 1) {
-
-                                            JSONObject jsonFacebook = (JSONObject) new JSONTokener(jsonObject.toString()).nextValue();
-                                            JSONObject likes_paging = (JSONObject) new JSONTokener(jsonFacebook.getJSONObject("paging").toString()).nextValue();
-
-
-                                            for (int i = 0; i < jsonFacebook.getJSONArray("data").length(); i++) {
-                                                likes.add(jsonFacebook.getJSONArray("data").getJSONObject(i).getString("name"));
-                                                counter++;
-                                            }
-                                            afterString[0] = (String) likes_paging.getJSONObject("cursors").get("after");
-
-                                        } else {
-                                            noData[0] = false;
-                                        }
                                     } catch (JSONException e) {
+                                        textView.setText("No ID");
+                                        e.printStackTrace();
+                                    }
+                                    try {
+                                        User_birthday = object.getString("birthday");
+                                        User_Age = convertToAge(User_birthday);
+
+                                    } catch (JSONException e) {
+                                        textView.setText("No Birthday");
                                         e.printStackTrace();
                                     }
                                 }
                             });
-
                     Bundle parameters = new Bundle();
-                    parameters.putString("pretty", "0");
-                    parameters.putString("limit", "100");
-                    parameters.putString("after", afterString[0]);
-                    request.setParameters(parameters);
-                    request.executeAndWait();
-                } while (noData[0] == true);
+                    parameters.putString("fields", "id, gender, birthday");
+                    request2.setParameters(parameters);
+                    request2.executeAndWait();
 
-                /*Graph Request for getting Gender, User-Id and Birthday*/
-                GraphRequest request2 = GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(),
-                        new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(JSONObject object, GraphResponse response) {
-                                Log.v("Main", response.toString());
-                                try {
-                                    User_Gender = object.getString("gender");
+                    //Actions to be taken after all the information about the user has been collected
+                    insertPageData();
+                    putInGlobals();
+                    updateData(getCityCountry());
+                    beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is inside a bar
+                    goToSecondActivity();
+                }
 
-                                } catch (JSONException e) {
-                                    textView.setText("No Gender Specified");
-                                    e.printStackTrace();
-                                }
+                @Override
+                public void onCancel() {
+                    textView.setText("LogIn Cancelled");
+                }
 
-                                try {
-                                    User_id = object.getString("id");
-                                    textView.setText(" " + User_id);
+                @Override
+                public void onError(FacebookException error) {
+                    textView.setText("Error Encoutered");
+                }
+            });
+        }
 
-                                } catch (JSONException e) {
-                                    textView.setText("No ID");
-                                    e.printStackTrace();
-                                }
-                                try {
-                                    User_birthday = object.getString("birthday");
-                                    User_Age = convertToAge(User_birthday);
-
-                                } catch (JSONException e) {
-                                    textView.setText("No Birthday");
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, gender, birthday");
-                request2.setParameters(parameters);
-                request2.executeAndWait();
-
-                //Actions to be taken after all the information about the user has been collected
-                insertPageData();
-                putInGlobals();
-                updateData(getCityCountry());
-                beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is inside a bar
-                goToSecondActivity();
-            }
-
-            @Override
-            public void onCancel() {
-                textView.setText("LogIn Cancelled");
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                textView.setText("Error Encoutered");
-            }
-        });
     }
+
+    public void Get_hash_key() {
+        PackageInfo info;
+        try {
+            info = getPackageManager().getPackageInfo("com.example.android.findbar", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md;
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String something = new String(Base64.encode(md.digest(), 0));
+                //String something = new String(Base64.encodeBytes(md.digest()));
+                Log.e("hash key", something);
+            }
+        } catch (PackageManager.NameNotFoundException e1) {
+            Log.e("name not found", e1.toString());
+        }  catch (Exception e) {
+            Log.e("exception", e.toString());
+        }
+    }
+
 
     /**
      * Get Location of User
