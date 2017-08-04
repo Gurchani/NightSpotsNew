@@ -51,7 +51,9 @@
         android:layout_marginBottom="6dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"></fragment>
+        android:layout_marginRight="6dp"
+        tools:layout="@layout/fragment_bar_map_view"
+        ></fragment>
 
 
 
