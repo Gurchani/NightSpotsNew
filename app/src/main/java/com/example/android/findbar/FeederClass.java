@@ -49,7 +49,16 @@ public class FeederClass {
         public static final String LessCrowdedChecked = "LessCrowdedChecked";
         public static final String SimilarChecked = "SimilarChecked";
 
+        //Variables for Seekbars
+        public static final String mGirlsmBoys = "MoreGirlsMoreBoys";
+        public static final String Similarity = "SimilarToMe";
+        public static final String CrowdLevel = "CrowdedOrNot";
+        public static final String Age = "Age";
 
+        //Variable through Buttons
+        public static final String Singleness = "Singularity";
+        public static final String cheapness = "Cheapest";
+        public static final String Happyhour = "Happyhour";
 
     }
 }

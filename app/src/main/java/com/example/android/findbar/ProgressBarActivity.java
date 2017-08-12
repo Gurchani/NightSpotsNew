@@ -31,19 +31,24 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ProgressBarActivity extends AppCompatActivity {
 
-    //Choices made by user
+    //Choices made by user through tick boxes
     boolean SingleGirlsTicked;
     boolean PintPriceTicked;
     boolean LessCrowdedTicked;
     boolean SimilartoMeTicked;
 
+    //Choices made by users through seekbars
+    int GirlsOrBoys;
+    boolean Singlenes;
+    int CrowdLevel;
+    int SimilarityLevel;
+    int Age;
+    int HappyHour;
+    int Cheapest;
 
     //Information about user
     String User_Gender ;
     int User_Age;
-
-
-
 
     //UI Stuff
     ProgressBar pb;
@@ -62,32 +67,93 @@ public class ProgressBarActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
 
-        SingleGirlsTicked = intent.getBooleanExtra("SingleGirls", true);
+        /*SingleGirlsTicked = intent.getBooleanExtra("SingleGirls", true);
         PintPriceTicked = intent.getBooleanExtra("PintPrice", true);
         LessCrowdedTicked = intent.getBooleanExtra("LessCrowded", true);
-        SimilartoMeTicked = intent.getBooleanExtra("SimilarToMe", true);
+        SimilartoMeTicked = intent.getBooleanExtra("SimilarToMe", false);*/
 
-        /*User_Age = intent.getIntExtra("UserAge", 25);
-        User_Gender = intent.getStringExtra("UserGender");*/
+        getUserChoices();
+        String sqlStatement = createSqlStatement();
+        sendTheStatement(sqlStatement);
+    }
+
+    private void getUserChoices() {
+        CheckBoxDatabase dbHelper = new CheckBoxDatabase(getApplicationContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 
+        String[] projection = {
+                FeederClass.FeedEntry.LessCrowdedChecked,
+                FeederClass.FeedEntry.SimilarChecked,
+                FeederClass.FeedEntry.SingleGirlsChecked,
+                FeederClass.FeedEntry.mGirlsmBoys,
+                FeederClass.FeedEntry.Singleness,
+                FeederClass.FeedEntry.PintPriceChecked,
+        };
+
+        Cursor cursor = db.query(
+                FeederClass.FeedEntry.CheckBox,                     // The table to query
+                null,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        while (cursor.moveToNext()) {
+            SingleGirlsTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked)));
+            PintPriceTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked)));
+            LessCrowdedTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked)));
+            SimilartoMeTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked)));
+            GirlsOrBoys = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys));
+            Singlenes = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness)));
+            CrowdLevel = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel));
+        }
+    }
+
+    //Send the Sql Statement to the server and put the data in local sqlite database
+    private void sendTheStatement(String sqlStatement) {
+        String type = "GetSortedBars";
+        putDatafromServer.execute(type, sqlStatement);
+    }
+
+    private String createSqlStatement(){
         String SGT = "";
         String PPT = "";
         String SMT = "";
         String LCT = "";
 
-        if(SingleGirlsTicked){
+        /*if(SingleGirlsTicked){
             if (User_Gender.equalsIgnoreCase("female")){
                 SGT = "(.5 * SingleBoys)";
             } else {
                 SGT = "(.5 * SingleGirls)";
             }
             if (PintPriceTicked || LessCrowdedTicked || SimilartoMeTicked){
-                 SGT = SGT + " + ";
+                SGT = SGT + " + ";
             }
         } else {
             SGT = "";
+        }*/
+        double ImportanceMultiplier = GirlsOrBoys/10;
+        if(GirlsOrBoys <= 50){
+            if(Singlenes){
+                SGT = "(" + ImportanceMultiplier + "* SingleBoys/(TotalBoys + TotalGirls))";
+            } else {
+                SGT = "(" + ImportanceMultiplier + "* TotalBoys/(TotalBoys + TotalGirls))";
+            }
+        } else {
+            if(Singlenes){
+                SGT = "(" + ImportanceMultiplier + "* SingleGirls/(TotalBoys + TotalGirls))";
+            } else {
+                SGT = "(" + ImportanceMultiplier + "* TotalGirls/(TotalBoys + TotalGirls))";
+            }
         }
+        if (PintPriceTicked || LessCrowdedTicked || SimilartoMeTicked){
+                SGT = SGT + " + ";
+        }
+
 
         if(PintPriceTicked){
             PPT = "(-0.2 * PintPrice)";
@@ -104,44 +170,28 @@ public class ProgressBarActivity extends AppCompatActivity {
         } else {
             PPT = "";
         }
-        if(LessCrowdedTicked){
-            LCT = "(-0.2 * (TotalGirls + TotalBoys))";
+
+        int crowdImportanceMultiplier = CrowdLevel/10;
+        if(CrowdLevel <= 50){
+            LCT = "+(" + crowdImportanceMultiplier + "* (TotalGirls + TotalBoys))";
             if (SimilartoMeTicked){
                 LCT = LCT + " + ";
-            }
+           }
         } else {
-            LCT = "";
-        }
-        if(SimilartoMeTicked){
-
-        } else {
-
+            LCT = "+( (-1)* " + crowdImportanceMultiplier + "* (TotalGirls + TotalBoys))";
         }
 
         String SqlStatement = "SELECT id, TotalBoys, TotalGirls, SingleBoys, SingleGirls, AvAge, PintPrice FROM barlivedata" + " ORDER BY "+ SGT + PPT + LCT + SMT +" DESC";
         //  + PPT + SMT + LCT + ")
-        sendTheStatement(SqlStatement);
-    }
 
-    //Send the Sql Statement to the server and put the data in local sqlite database
-    private void sendTheStatement(String sqlStatement) {
-        String type = "GetSortedBars";
-        putDatafromServer.execute(type, sqlStatement);
+        return SqlStatement;
+
     }
 
     //If needed
     public void moveToNextActivity(){
         Intent intent = new Intent(this, MapListFragment.class);
-//        intent.putExtra("SingleGirlsTicked",SingleGirlsTicked);
-//        intent.putExtra("PintPriceTicked",PintPriceTicked);
-//        intent.putExtra("LessCrowdedTicked",LessCrowdedTicked);
-//        intent.putExtra("SimilarToMeTicked",SimilartoMeTicked);
-//
-//        intent.putExtra("UserGender",User_Gender);
-//        intent.putExtra("UserAge", User_Age);
         startActivity(intent);
-
-
     }
 
     public void moveToSettingsActivity(View view){
@@ -301,5 +351,12 @@ public class ProgressBarActivity extends AppCompatActivity {
             User_Gender = cursorLive.getString(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.UserGender));
             User_Age = cursorLive.getInt(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.UserAge));
         }
+    }
+
+    private boolean convertIntToBool(int n){
+        if (n == 1) {
+            return true;
+        } else
+            return false;
     }
 }

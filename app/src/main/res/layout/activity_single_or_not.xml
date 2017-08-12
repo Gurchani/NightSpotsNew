@@ -11,64 +11,46 @@
 
     <CheckBox
         android:id="@+id/pintPrice"
-        android:layout_width="190dp"
-        android:layout_height="49dp"
+        android:layout_width="239dp"
+        android:layout_height="47dp"
         android:text="Low Price for Beer Pint"
         android:checked="false"
-        android:layout_marginStart="51dp"
         tools:layout_constraintTop_creator="1"
-        android:layout_marginTop="78dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginLeft="51dp" />
+        android:layout_marginLeft="16dp" />
 
     <CheckBox
         android:id="@+id/SingleGirls"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="0dp"
         android:text="Places with most Single Girls"
         android:checked="false"
+        app:layout_constraintRight_toLeftOf="@+id/pintPrice"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="@+id/SimilarToMe"
-        app:layout_constraintRight_toRightOf="@+id/pintPrice"
-        android:layout_marginTop="48dp"
+        app:layout_constraintBottom_toBottomOf="@+id/pintPrice"
+        app:layout_constraintTop_toBottomOf="@+id/pintPrice"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="52dp"
-        app:layout_constraintLeft_toLeftOf="@+id/pintPrice"
-        app:layout_constraintTop_toTopOf="@+id/pintPrice"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintVertical_bias="0.083" />
+        app:layout_constraintLeft_toLeftOf="@+id/pintPrice" />
 
     <CheckBox
         android:id="@+id/SimilarToMe"
-        android:layout_width="192dp"
-        android:layout_height="50dp"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
         android:text="Places similar to me"
         android:checked="false"
         tools:layout_constraintTop_creator="1"
-        tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="@+id/SingleGirls"
-        android:layout_marginTop="57dp"
-        app:layout_constraintTop_toBottomOf="@+id/pintPrice"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toBottomOf="@+id/SingleGirls"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/SingleGirls"
-        app:layout_constraintHorizontal_bias="0.0" />
-
-    <CheckBox
-        android:id="@+id/LessCrowded"
-        android:layout_width="193dp"
-        android:layout_height="49dp"
-        android:text="Less Crowded"
-        android:checked="false"
-        tools:layout_constraintTop_creator="1"
-        tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/SimilarToMe"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="16dp" />
 
     <Button
         android:id="@+id/Done"
@@ -76,12 +58,177 @@
         android:layout_height="wrap_content"
         android:text="Done"
         android:onClick="insertUserDetails"
+        app:layout_constraintRight_toLeftOf="@+id/textView5"
+        tools:layout_constraintRight_creator="1"
+        android:layout_marginStart="47dp"
+        android:layout_marginEnd="46dp"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toRightOf="@+id/textView3"
+        android:layout_marginLeft="47dp"
+        android:layout_marginRight="46dp"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/textView3"
+        android:layout_marginBottom="16dp" />
+
+    <SeekBar
+        android:id="@+id/MoreGirlsMoreBoys"
+        style="@android:style/Widget.Material.SeekBar"
+        android:layout_width="0dp"
+        android:layout_height="33dp"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/Crowded"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="0dp"
+        android:layout_height="26dp"
+        android:text="More Boys"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="21dp"
-        app:layout_constraintTop_toBottomOf="@+id/LessCrowded"
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="7dp"
+        app:layout_constraintRight_toRightOf="@+id/textView6"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="7dp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="0dp"
+        android:layout_height="23dp"
+        android:text="More Girls"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        android:layout_marginStart="17dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintRight_toRightOf="@+id/MoreGirlsMoreBoys"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/textView5"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="17dp"
+        android:layout_marginRight="12dp" />
+
+    <SeekBar
+        android:id="@+id/Similarity"
+        android:layout_width="0dp"
+        android:layout_height="33dp"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/Crowded"
+        android:layout_marginTop="84dp"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="86dp"
+        app:layout_constraintLeft_toLeftOf="@+id/Crowded" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Less Crowded"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/SinglesButton"
+        android:layout_marginEnd="6dp"
+        app:layout_constraintRight_toRightOf="@+id/Crowded"
+        android:layout_marginTop="140dp"
+        android:layout_marginBottom="139dp"
+        app:layout_constraintTop_toTopOf="@+id/Done"
+        android:layout_marginRight="6dp" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="More Crowded"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/Crowded"
+        android:layout_marginStart="8dp"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/Crowded"
+        android:layout_marginLeft="8dp" />
+
+    <SeekBar
+        android:id="@+id/Crowded"
+        android:layout_width="0dp"
+        android:layout_height="33dp"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/Similarity"
+        app:layout_constraintRight_toRightOf="@+id/MoreGirlsMoreBoys"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="52dp"
+        app:layout_constraintLeft_toLeftOf="@+id/MoreGirlsMoreBoys" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Different than Me"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="@+id/Similarity"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintRight_toRightOf="@+id/Similarity"
+        android:layout_marginBottom="32dp"
+        android:layout_marginRight="5dp" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Similar to Me"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/Similarity"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/Similarity" />
+
+    <ToggleButton
+        android:id="@+id/SinglesButton"
+        style="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ToggleButton"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="57dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="57dp" />
+
+    <TextView
+        android:id="@+id/Singles"
+        android:layout_width="113dp"
+        android:layout_height="0dp"
+        android:text="Singles Search"
+        android:textSize="25dp"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/SinglesButton" />
 
 </android.support.constraint.ConstraintLayout>

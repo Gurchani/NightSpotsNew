@@ -77,6 +77,8 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
     double avAge;
     int SingleGirls;
     int SingleBoys;
+    int TotalBoys;
+    int TotalGirls;
 
     String GenderRatio;
 
@@ -304,7 +306,9 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
                 FeederClass.FeedEntry.Ranking,
                 FeederClass.FeedEntry.SingleBoys,
                 FeederClass.FeedEntry.SingleGirls,
-                FeederClass.FeedEntry.PintPrice
+                FeederClass.FeedEntry.PintPrice,
+                FeederClass.FeedEntry.TotalBoys,
+                FeederClass.FeedEntry.TotalGirls
 
         };
         String selectionLive = FeederClass.FeedEntry.barId + " = ?";
@@ -327,6 +331,8 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
             SingleGirls = cursorLive.getInt(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirls));
             SingleBoys =  cursorLive.getInt(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleBoys));
             pintPrice = cursorLive.getDouble(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPrice));
+            TotalBoys = cursorLive.getInt(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.TotalBoys));
+            TotalGirls = cursorLive.getInt(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.TotalGirls));
 
         }
         cursorLive.close();
@@ -357,6 +363,10 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
                 + "Single Girls:      " + SingleGirls
                 + System.getProperty ("line.separator")
                 + "Pint Price:      " + pintPrice
+                + System.getProperty ("line.separator")
+                + "TotalBoys:       " + TotalBoys
+                + System.getProperty ("line.separator")
+                + "TotalGirls:       " + TotalGirls
                 ;
 
         MarkerOptions markerOptions = new MarkerOptions().position(paris).title(BarName).snippet(snippet);

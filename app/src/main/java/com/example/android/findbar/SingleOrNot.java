@@ -17,7 +17,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.SeekBar;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import static com.example.android.findbar.R.styleable.View;
 
@@ -28,6 +31,13 @@ public class SingleOrNot extends AppCompatActivity {
     boolean lessCrowded = false;
     boolean pintPrice = false;
     boolean similarity = false;
+
+    //Values from Seekbars. Set the default value of girl boy choice here
+    int ChooseByGirlsOrBoys = 0; //values close to 0 means user prefers girl and close 100 means boys
+    int Crowdedness = 0;
+
+    //Values Chosen Toggle Buttons
+    int Singleness;
 
     String relationshipStatus = "true" ;
 
@@ -40,6 +50,13 @@ public class SingleOrNot extends AppCompatActivity {
     //Checkbox
     private CheckBox LowPrice, WithSingleGirls, SimilarToMe, LessCrowded ;
     private Button done;
+
+    //SeekBars
+    private SeekBar mGirlsmBoys ;
+    private SeekBar CrowdedOrNot ;
+
+    //Toggle Buttons
+    private ToggleButton SearchSingles;
 
 
     @Override
@@ -60,10 +77,66 @@ public class SingleOrNot extends AppCompatActivity {
         User_Age = SecondIntent.getIntExtra("User_Age", 0);
         User_id = SecondIntent.getStringExtra("User_id");
 
+        //Seekbar
+        mGirlsmBoys =(SeekBar)findViewById(R.id.MoreGirlsMoreBoys);
+        CrowdedOrNot = (SeekBar) findViewById(R.id.Crowded);
+        SearchSingles = (ToggleButton) findViewById(R.id.SinglesButton);
+
+
         if (CheckerDataAlreadyExists()){
             ChangeCheckBoxDefaultValues();
         }
         addListenerOnButton();
+
+
+
+        mGirlsmBoys.setOnSeekBarChangeListener(
+            new SeekBar.OnSeekBarChangeListener(){
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    ChooseByGirlsOrBoys = progress;
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            }
+        );
+        CrowdedOrNot.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener(){
+
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        Crowdedness = progress;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                }
+        );
+        SearchSingles.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Singleness = 1;
+                } else {
+                    Singleness = 0;
+                }
+            }
+        });
     }
 
     /**
@@ -103,7 +176,10 @@ public class SingleOrNot extends AppCompatActivity {
                 contentValues.put(FeederClass.FeedEntry.PintPriceChecked, convertToInt(pintPrice));
                 contentValues.put(FeederClass.FeedEntry.LessCrowdedChecked, convertToInt(lessCrowded));
                 contentValues.put(FeederClass.FeedEntry.SimilarChecked, convertToInt(similarity));
+                contentValues.put(FeederClass.FeedEntry.mGirlsmBoys, ChooseByGirlsOrBoys);
                 contentValues.put(FeederClass.FeedEntry.SingleGirlsChecked, convertToInt(SingleGirls));
+                contentValues.put(FeederClass.FeedEntry.Singleness, Singleness);
+                contentValues.put(FeederClass.FeedEntry.CrowdLevel, Crowdedness);
 
 
                 long result = db.replace(FeederClass.FeedEntry.CheckBox, null, contentValues);
@@ -113,7 +189,7 @@ public class SingleOrNot extends AppCompatActivity {
         });
     }
     /**
-     * Moves to the next activity where the map is visible
+     * Moves to the progress bar activity
      */
     public void moveToNextActivity(){
 
@@ -159,7 +235,10 @@ public class SingleOrNot extends AppCompatActivity {
                 FeederClass.FeedEntry.LessCrowdedChecked,
                 FeederClass.FeedEntry.SimilarChecked,
                 FeederClass.FeedEntry.SingleGirlsChecked,
-                FeederClass.FeedEntry.PintPriceChecked
+                FeederClass.FeedEntry.mGirlsmBoys,
+                FeederClass.FeedEntry.PintPriceChecked,
+                FeederClass.FeedEntry.Singleness,
+                FeederClass.FeedEntry.CrowdLevel
 
         };
 
@@ -194,7 +273,9 @@ public class SingleOrNot extends AppCompatActivity {
                 FeederClass.FeedEntry.LessCrowdedChecked,
                 FeederClass.FeedEntry.SimilarChecked,
                 FeederClass.FeedEntry.SingleGirlsChecked,
-                FeederClass.FeedEntry.PintPriceChecked
+                FeederClass.FeedEntry.mGirlsmBoys,
+                FeederClass.FeedEntry.PintPriceChecked,
+                FeederClass.FeedEntry.CrowdLevel
 
         };
 
@@ -212,7 +293,10 @@ public class SingleOrNot extends AppCompatActivity {
             LowPrice.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked))));
             LessCrowded.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked))));
             WithSingleGirls.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked))));
+            mGirlsmBoys.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys)));
             SimilarToMe.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked))));
+            SearchSingles.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness))));
+            CrowdedOrNot.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel)));
 
         }
 

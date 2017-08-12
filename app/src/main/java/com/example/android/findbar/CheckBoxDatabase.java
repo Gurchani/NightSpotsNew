@@ -17,6 +17,9 @@ public class CheckBoxDatabase extends SQLiteOpenHelper {
             FeederClass.FeedEntry.SingleGirlsChecked + " INTEGER," +
             FeederClass.FeedEntry.PintPriceChecked + " INTEGER, " +
             FeederClass.FeedEntry.LessCrowdedChecked + " INTEGER, " +
+            FeederClass.FeedEntry.mGirlsmBoys + " INTEGER DEFAULT 1, " +
+            FeederClass.FeedEntry.Singleness + " INTEGER DEFAULT 1, " +
+            FeederClass.FeedEntry.CrowdLevel + " INTEGER DEFAULT 1, " +
             FeederClass.FeedEntry.SimilarChecked + " INTEGER);";
 
     private static final String SQL_DELETE_ENTRIES =
