@@ -69,7 +69,6 @@ public class SingleOrNot extends AppCompatActivity {
         LowPrice = (CheckBox) findViewById(R.id.pintPrice);
         WithSingleGirls = (CheckBox) findViewById(R.id.SingleGirls);
         SimilarToMe = (CheckBox) findViewById(R.id.SimilarToMe);
-        LessCrowded = (CheckBox) findViewById(R.id.LessCrowded);
 
         //Read the values from the previously collected facebook data
         Intent SecondIntent = getIntent();
