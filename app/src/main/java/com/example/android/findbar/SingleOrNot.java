@@ -50,6 +50,7 @@ public class SingleOrNot extends AppCompatActivity {
     //Checkbox
     private CheckBox LowPrice, WithSingleGirls, SimilarToMe, LessCrowded ;
     private Button done;
+    private Button slidingDrawer;
 
     //SeekBars
     private SeekBar mGirlsmBoys ;
@@ -58,12 +59,15 @@ public class SingleOrNot extends AppCompatActivity {
     //Toggle Buttons
     private ToggleButton SearchSingles;
 
+    private AppDrawer appDrawer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_or_not);
         Button done = (Button)findViewById(R.id.Done);
+        slidingDrawer = (Button)findViewById(R.id.open_drawer);
 
         //CheckBoxes
         LowPrice = (CheckBox) findViewById(R.id.pintPrice);
@@ -86,6 +90,10 @@ public class SingleOrNot extends AppCompatActivity {
             ChangeCheckBoxDefaultValues();
         }
         addListenerOnButton();
+
+        addListenerOnSlider();
+
+        appDrawer = new AppDrawer(this);
 
 
 
@@ -134,6 +142,18 @@ public class SingleOrNot extends AppCompatActivity {
                 } else {
                     Singleness = 0;
                 }
+            }
+        });
+    }
+
+
+
+    public void addListenerOnSlider(){
+        slidingDrawer = (Button)findViewById(R.id.open_drawer);
+        slidingDrawer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                appDrawer.switchDrawer(1);
             }
         });
     }
@@ -288,16 +308,16 @@ public class SingleOrNot extends AppCompatActivity {
                 null                                 // The sort order
         );
 
-        while (cursor.moveToNext()) {
-            LowPrice.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked))));
-            LessCrowded.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked))));
-            WithSingleGirls.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked))));
-            mGirlsmBoys.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys)));
-            SimilarToMe.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked))));
-            SearchSingles.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness))));
-            CrowdedOrNot.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel)));
-
-        }
+//        while (cursor.moveToNext()) {
+//            LowPrice.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked))));
+//            LessCrowded.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked))));
+//            WithSingleGirls.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked))));
+//            mGirlsmBoys.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys)));
+//            SimilarToMe.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked))));
+//            SearchSingles.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness))));
+//            CrowdedOrNot.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel)));
+//
+//        }
 
     }
     /**
@@ -311,4 +331,7 @@ public class SingleOrNot extends AppCompatActivity {
         } else
             return false;
     }
+
 }
+
+

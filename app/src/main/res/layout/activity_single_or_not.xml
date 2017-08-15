@@ -6,7 +6,10 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.findbar.SingleOrNot"
     tools:layout_editor_absoluteY="25dp"
-    tools:layout_editor_absoluteX="0dp">
+    tools:layout_editor_absoluteX="0dp"
+    android:id="@+id/new_single_id">
+
+
 
 
     <CheckBox
@@ -50,14 +53,30 @@
         app:layout_constraintTop_toBottomOf="@+id/SingleGirls"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="16dp" />
+        android:layout_marginLeft="16dp"
+        />
 
+    <Button
+        android:id="@+id/open_drawer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open Sliding"
+        app:layout_constraintRight_toLeftOf="@+id/textView5"
+        tools:layout_constraintRight_creator="1"
+
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toRightOf="@+id/textView3"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/Done"
+        android:stateListAnimator="@null"
+        />
+    <!--android:onClick="insertUserDetails"-->
     <Button
         android:id="@+id/Done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Done"
-        android:onClick="insertUserDetails"
+
         app:layout_constraintRight_toLeftOf="@+id/textView5"
         tools:layout_constraintRight_creator="1"
         android:layout_marginStart="47dp"
@@ -68,11 +87,12 @@
         android:layout_marginRight="46dp"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/textView3"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:stateListAnimator="@null"/>
 
     <SeekBar
         android:id="@+id/MoreGirlsMoreBoys"
-        style="@android:style/Widget.Material.SeekBar"
+
         android:layout_width="0dp"
         android:layout_height="33dp"
         tools:layout_constraintRight_creator="1"
@@ -210,6 +230,7 @@
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:stateListAnimator="@null"
         android:layout_marginEnd="57dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginBottom="16dp"
@@ -230,5 +251,8 @@
         android:layout_marginBottom="4dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@+id/SinglesButton" />
+
+    <include
+        layout="@layout/bottom_drawer" />
 
 </android.support.constraint.ConstraintLayout>

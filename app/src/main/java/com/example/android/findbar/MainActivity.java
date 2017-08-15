@@ -98,16 +98,16 @@ public class MainActivity extends AppCompatActivity {
          //getLocation();
 
         /*Facebook login related code*/
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+//        AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if (false){
             Log.d("Yahoo", "already logged in");
-            User_id = accessToken.getUserId();
-            //Actions to be taken after all the information about the user has been collected
-            insertPageData();
-            putInGlobals();
-            updateData(getCityCountry());
-            beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is inside a bar
-            goToSecondActivity();
+//            User_id = accessToken.getUserId();
+//            //Actions to be taken after all the information about the user has been collected
+//            insertPageData();
+//            putInGlobals();
+//            updateData(getCityCountry());
+//            beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is inside a bar
+//            goToSecondActivity();
         }
         else{
             loginButton = (LoginButton) findViewById(R.id.login_button);
