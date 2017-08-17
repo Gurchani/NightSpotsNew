@@ -79,7 +79,7 @@ public class ProgressBarActivity extends AppCompatActivity {
 
     private void getUserChoices() {
         CheckBoxDatabase dbHelper = new CheckBoxDatabase(getApplicationContext());
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
 
         String[] projection = {
@@ -102,14 +102,16 @@ public class ProgressBarActivity extends AppCompatActivity {
         );
 
         while (cursor.moveToNext()) {
-            SingleGirlsTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked)));
+            //SingleGirlsTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked)));
             PintPriceTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked)));
-            LessCrowdedTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked)));
+            //LessCrowdedTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked)));
             SimilartoMeTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked)));
             GirlsOrBoys = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys));
             Singlenes = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness)));
             CrowdLevel = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel));
         }
+
+        cursor.close();
     }
 
     //Send the Sql Statement to the server and put the data in local sqlite database

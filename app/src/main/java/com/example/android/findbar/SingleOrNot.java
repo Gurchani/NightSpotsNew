@@ -152,22 +152,22 @@ public class SingleOrNot extends AppCompatActivity {
                 } else {
                     pintPrice = false;
                 }
-                if(WithSingleGirls.isChecked()){
+                /*if(WithSingleGirls.isChecked()){
                     SingleGirls = true;
                 } else {
                     SingleGirls = false;
-                }
+                }*/
                 if(SimilarToMe.isChecked()){
                     similarity = true ;
                 } else {
                     similarity = false;
                 }
-                if(LessCrowded.isChecked()){
+                /*if(LessCrowded.isChecked()){
                     lessCrowded = true;
                 } else {
                     lessCrowded = false;
                 }
-
+*/
                 CheckBoxDatabase dbHelperWriter = new CheckBoxDatabase(getApplicationContext());
                 SQLiteDatabase db = dbHelperWriter.getWritableDatabase();
 
@@ -255,6 +255,7 @@ public class SingleOrNot extends AppCompatActivity {
             cursor.close();
             return false;
         } else {
+            int tester = cursor.getCount();
             cursor.close();
             return true;}
 
@@ -289,15 +290,20 @@ public class SingleOrNot extends AppCompatActivity {
         );
 
         while (cursor.moveToNext()) {
+            int countTest = cursor.getCount();
+            int test = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys));
+            int test2 = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel));
             LowPrice.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked))));
-            LessCrowded.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked))));
-            WithSingleGirls.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked))));
+           // LessCrowded.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked))));
+           // WithSingleGirls.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked))));
             mGirlsmBoys.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys)));
             SimilarToMe.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked))));
             SearchSingles.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness))));
             CrowdedOrNot.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel)));
 
         }
+
+        cursor.close();
 
     }
     /**
