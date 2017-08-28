@@ -98,16 +98,16 @@ public class MainActivity extends AppCompatActivity {
          //getLocation();
 
         /*Facebook login related code*/
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+//        AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if (false){
             Log.d("Yahoo", "already logged in");
-            User_id = accessToken.getUserId();
-            //Actions to be taken after all the information about the user has been collected
-            insertPageData();
-            putInGlobals();
-            updateData(getCityCountry());
-            beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is inside a bar
-            goToSecondActivity();
+//            User_id = accessToken.getUserId();
+//            //Actions to be taken after all the information about the user has been collected
+//            insertPageData();
+//            putInGlobals();
+//            updateData(getCityCountry());
+//            beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is inside a bar
+//            goToSecondActivity();
         }
         else{
             loginButton = (LoginButton) findViewById(R.id.login_button);
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
      * Leads you to Second Activty where user chooses wether a person is single or not
      */
     public void goToSecondActivity(){
-        Intent SecondIntent = new Intent(MainActivity.this, SingleOrNot.class);
+        Intent SecondIntent = new Intent(MainActivity.this, ProgressBarActivity.class);
         SecondIntent.putExtra("User_Gender", User_Gender);
         SecondIntent.putExtra("User_Age", User_Age);
         SecondIntent.putExtra("User_id", User_id);
