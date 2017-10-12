@@ -1,37 +1,51 @@
 package com.example.android.findbar;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ToggleButton;
+import android.widget.Button;
 
-public class MapListFragment extends AppCompatActivity implements BarMapView.OnFragmentInteractionListener ,TestFragment.OnFragmentInteractionListener {
+public class MapListFragment extends AppCompatActivity implements BarMapView.OnFragmentInteractionListener, TestFragment.OnFragmentInteractionListener, ProgressBarFragment.OnFragmentInteractionListener {
     Fragment fragment;
+    Button userProfile;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_list_fragment);
-
+        userProfile = (Button) findViewById(R.id.profile);
+        userProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoProfileActivity();
+            }
+        });
         //Default View
-        fragment = new TestFragment();
+        fragment = new ProgressBarFragment();
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.mapOrList, fragment);
         ft.addToBackStack(null);
         ft.commit();
     }
-    public void changeViewType(View view){
 
-        boolean checked = ((ToggleButton)view).isChecked();
+    @Override
+    public void onResume() {
+        super.onResume();
+        beginFromStart();
+    }
 
-        if(checked){
+    public void changeViewType() {
+
+        // boolean checked = ((ToggleButton)view).isChecked();
+
+        /*if(checked){
             //List View
             fragment = new ListViewFragment();
             FragmentManager fm = getFragmentManager();
@@ -39,17 +53,17 @@ public class MapListFragment extends AppCompatActivity implements BarMapView.OnF
             ft.replace(R.id.mapOrList, fragment);
             ft.addToBackStack(null);
             ft.commit();
-
         }
-        else {
+        else {*/
             //Map View
-            fragment = new TestFragment();
-            FragmentManager fm = getFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace(R.id.mapOrList, fragment);
-            ft.addToBackStack(null);
-            ft.commit();
-        }
+
+        fragment = new TestFragment();
+        FragmentManager fg = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fg.beginTransaction();
+        fragmentTransaction.replace(R.id.mapOrList, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commitAllowingStateLoss();
+
     }
     public void changeSettings(View view){
         Intent ThirdIntent = new Intent(MapListFragment.this, SingleOrNot.class);
@@ -60,4 +74,20 @@ public class MapListFragment extends AppCompatActivity implements BarMapView.OnF
     public void onFragmentInteraction(Uri uri){
         //you can leave it empty
     }
+
+    public void beginFromStart() {
+        fragment = new ProgressBarFragment();
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.mapOrList, fragment);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    private void gotoProfileActivity() {
+        Intent SecondIntent = new Intent(MapListFragment.this, UserProfile.class);
+        startActivity(SecondIntent);
+
+    }
+
 }

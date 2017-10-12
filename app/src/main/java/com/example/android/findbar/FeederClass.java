@@ -42,6 +42,7 @@ public class FeederClass {
         public static final String UserGender = "UserGender";
         public static final String  UserAge= "UserAge";
         public static final String UserFbid = "UserFbid";
+        public static final String profilePicture = "profilePicture";
 
         //Variables for Checker Box
         public static final String SingleGirlsChecked = "SingleGirlsChecked";

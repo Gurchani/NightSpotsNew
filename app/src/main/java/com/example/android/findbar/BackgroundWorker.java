@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,7 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.HashMap;
 
 /**
  * Created by Gurchani on 1/5/2017.
@@ -30,11 +28,11 @@ import java.util.HashMap;
 public class BackgroundWorker extends AsyncTask<String,Void,String> {
     Context context;
     AlertDialog alertDialog;
+    String[][] dataResult;
+    String result;
     BackgroundWorker(Context ctx) {
         context = ctx;
     }
-    String[][] dataResult;
-    String result;
 
     @Override
     protected String doInBackground(String... params) {
@@ -118,12 +116,9 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
                 bufferedWriter.flush();
                 bufferedWriter.close();
                 outputStream.close();
-
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
                 String line ="";
-                int counterV = 0;
-                int counterH = 0;
                 String result = "";
                 String inserterResult = "";
 
@@ -140,7 +135,6 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
                     String Latitude = jsonobject.getString("Latitude");
                     String Longitude = jsonobject.getString("Longitude");
                     String Radius = jsonobject.getString("Radius");
-
                    boolean insetData =  insertData(Integer.valueOf(id) , Name, Address, Double.valueOf(PricePint), Double.valueOf(Latitude) , Double.valueOf(Longitude), Integer.valueOf(Radius), City);
                     if (insetData)
                     {
@@ -566,11 +560,7 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
     }
 
     private boolean convertToBoolean(String value) {
-        if ((value.equalsIgnoreCase("male" )) | (value.equalsIgnoreCase("true"))){
-            return true;
-        } else {
-            return false;
-        }
+        return (value.equalsIgnoreCase("male")) | (value.equalsIgnoreCase("true"));
     }
     public boolean insertData(int id, String Name, String Address, double PricePint, double Latitude , double Longitude , int Radius, String cityCountry){
         localDatabase dbHelper = new localDatabase(this.context);
@@ -586,12 +576,8 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
         contentValues.put(FeederClass.FeedEntry.barRadius, Radius);
         contentValues.put(FeederClass.FeedEntry.barCityCountry, cityCountry);
 
-        long result = db.insert(FeederClass.FeedEntry.tableName, null, contentValues);
-        if (result == -1){
-            return false;
-        } else {
-            return true;
-        }
+        long result = db.replace(FeederClass.FeedEntry.tableName, null, contentValues);
+        return result != -1;
     }
 
 
