@@ -77,11 +77,14 @@
             android:process=":my_service" />
 
         <activity android:name=".MapListFragment" />
-        <activity
-            android:name=".MapsActivtiy2"
+        <!--
+            <activity
+            android:name=".MapsActivtiy"
             android:label="@string/title_activity_maps_activtiy2" />
+        -->
         <activity android:name=".ProgressBarActivity" />
-        <activity android:name=".UserProfile"></activity>
+        <activity android:name=".UserProfile" />
+        <activity android:name=".SignupActivity"></activity>
     </application>
 
 </manifest>

@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="wrap_content"
-    android:weightSum="100"
-    android:minWidth="200dp"
-    android:maxHeight="60dp"
     android:background="@drawable/round_layout"
+    android:maxHeight="60dp"
+    android:minWidth="200dp"
+    android:orientation="vertical"
+    android:weightSum="100"
     >
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:orientation="horizontal"
         android:layout_height="35dp"
-        android:weightSum="100"
+        android:layout_weight="38.10"
         android:minWidth="100dp"
-        android:background="@color/wallet_holo_blue_light"
-        android:layout_weight="38.10">
+        android:orientation="horizontal"
+        android:weightSum="100">
 
         <TextView
+            android:id="@+id/barName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/barName"
-            android:gravity="start"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="6dp"
+            android:gravity="start"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#fff"
             android:textStyle="bold|normal"
             />
@@ -43,18 +42,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginTop="5dp"
-        android:layout_weight="50">
+        android:layout_weight="50"
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/SingleGirls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/SingleGirls"
-            android:gravity="center"
-            android:textColor="#000"
             android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#000"
             android:textStyle="bold|normal"
                         />
         <!--<TextView-->

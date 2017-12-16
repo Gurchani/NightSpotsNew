@@ -1,6 +1,7 @@
 package com.example.android.findbar;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -10,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -18,6 +20,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -39,9 +46,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 
 /**
  * Main Activity Collects the following information about the user from his facebook account. 1)Facebook Id 2)Gender 3)Birthday (Used to convert it into age). and sends them to a database called Gloabl Variables
@@ -49,6 +68,9 @@ import java.util.Arrays;
  * Main activity also starts a service, which runs in the background and tells the server database if a user is inside a bar or not. If user is inside a particular bar then the service updates the server-database about the number of people, Gender, Average age of people for that particular bar.
  */
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+    private static final int REQUEST_SIGNUP = 0;
 
     LoginButton loginButton; //Log in Button for Facebook
     CallbackManager callbackManager; //Call back Manager for Facebook
@@ -67,8 +89,16 @@ public class MainActivity extends AppCompatActivity {
     double User_Longitude;
     int counter = 0; //This counter helps in keeping track of the for-loop for getting Page Likes of users
 
+    EditText emailText;
+    EditText _passwordText;
+    Button _loginButton;
+    TextView _signupLink;
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        //ButterKnife.bind(this);
         Get_hash_key();
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -77,6 +107,22 @@ public class MainActivity extends AppCompatActivity {
         if (accessToken == null) {
             Log.d("Failed", "Failed to Log in");
         }
+        emailText = (EditText) findViewById(R.id.input_email);
+        _passwordText = (EditText) findViewById(R.id.input_password);
+        _loginButton = (Button) findViewById(R.id.login_button);
+        _signupLink = (TextView) findViewById(R.id.link_signup);
+
+        _signupLink.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // Start the Signup activity
+                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                startActivityForResult(intent, REQUEST_SIGNUP);
+            }
+        });
+
+        //Facebook Button
         loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile",  //Get Permissions from Facebook
                 "user_likes", "user_birthday"));
@@ -108,6 +154,72 @@ public class MainActivity extends AppCompatActivity {
                 //textView.setText("Error Encoutered");
             }
         });
+    }
+
+    public void login(View view) {
+        Log.d(TAG, "Login");
+
+        if (!validate()) {
+            onLoginFailed();
+            return;
+        }
+
+        _loginButton.setEnabled(false);
+
+        final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
+
+        String email = emailText.getText().toString();
+        String password = _passwordText.getText().toString();
+
+        // TODO: Implement your own authentication logic here.
+
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        // On complete call either onLoginSuccess or onLoginFailed
+                        onLoginSuccess();
+                        // onLoginFailed();
+                        progressDialog.dismiss();
+                    }
+                }, 3000);
+    }
+
+    public void onLoginSuccess() {
+        _loginButton.setEnabled(true);
+        finish();
+    }
+
+    public void onLoginFailed() {
+        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+
+        _loginButton.setEnabled(true);
+    }
+
+    public boolean validate() {
+        boolean valid = true;
+
+        String email = emailText.getText().toString();
+        String password = _passwordText.getText().toString();
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailText.setError("enter a valid email address");
+            valid = false;
+        } else {
+            emailText.setError(null);
+        }
+
+        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+            _passwordText.setError("between 4 and 10 alphanumeric characters");
+            valid = false;
+        } else {
+            _passwordText.setError(null);
+        }
+
+        return valid;
     }
     public void Get_hash_key() {
         PackageInfo info;
@@ -377,5 +489,77 @@ public class MainActivity extends AppCompatActivity {
             request.setParameters(parameters);
             request.executeAndWait();
         } while (noData[0] == true);
+    }
+
+    class getSignInInfo extends AsyncTask<String, Integer, String> {
+        @Override
+        protected String doInBackground(String... params) {
+
+            String type = params[0];
+            String ip = "http://barfinder.website/";
+            String Signup = ip + "Signin.php";
+
+            String inserterResult = null;
+            if (type.equals("Signin")) {
+
+                try {
+                    String email = params[1];
+                    String password = params[2];
+                    URL url = new URL(Signup);
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                    String post_data = URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&"
+                            + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(password, "UTF-8");
+                    bufferedWriter.write(post_data);
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                    outputStream.close();
+
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                    String result = "";
+                    String line = "";
+                    while ((line = bufferedReader.readLine()) != null) {
+                        result += " " + line;
+                    }
+
+
+                    bufferedReader.close();
+                    inputStream.close();
+                    httpURLConnection.disconnect();
+
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    return "failed";
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return "failed again";
+                }
+            }
+
+            return inserterResult;
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+        }
     }
 }
