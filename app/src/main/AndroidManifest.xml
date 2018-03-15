@@ -16,7 +16,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/hookupapp"
+        android:icon="@mipmap/appicon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -68,17 +68,24 @@
             android:name=".FakeActivity"
             android:label="@string/title_activity_fake"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SingleOrNot" />
+        <activity
+            android:name=".SingleOrNot"
+            android:theme="@style/AppTheme.UmerTheme" />
 
         <service
             android:name=".service"
             android:process=":my_service" />
 
         <activity android:name=".MapListFragment" />
-        <activity
-            android:name=".MapsActivtiy2"
+        <!--
+            <activity
+            android:name=".MapsActivtiy"
             android:label="@string/title_activity_maps_activtiy2" />
-        <activity android:name=".ProgressBarActivity"></activity>
+        -->
+        <activity android:name=".ProgressBarActivity" />
+        <activity android:name=".UserProfile" />
+        <activity android:name=".SignupActivity" />
+        <activity android:name=".Prices"></activity>
     </application>
 
 </manifest>

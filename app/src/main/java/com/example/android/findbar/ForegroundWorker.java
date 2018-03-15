@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.service.notification.NotificationListenerService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,11 +31,12 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class ForegroundWorker extends AsyncTask<String,Integer,String>{
     Context context;
     AlertDialog alertDialog;
+    String resul = "";
+    ProgressBarActivity progressBarActivity;
     ForegroundWorker (Context ctx) {
         context = ctx;
     }
-    String resul = "";
-    ProgressBarActivity progressBarActivity;
+
     @Override
 
 
@@ -215,11 +215,7 @@ public class ForegroundWorker extends AsyncTask<String,Integer,String>{
         contentValues.put(FeederClass.FeedEntry.AvAge, AvAge);
 
         long result = db.insert(FeederClass.FeedEntry.LiveTableName, null, contentValues);
-        if (result == -1){
-            return false;
-        } else {
-            return true;
-        }
+        return result != -1;
 
     }
 
@@ -245,11 +241,7 @@ public class ForegroundWorker extends AsyncTask<String,Integer,String>{
                 selectionArgs);
 
 
-        if (count == -1){
-            return false;
-        } else {
-            return true;
-        }
+        return count != -1;
 
     }
 }

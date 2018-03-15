@@ -1,4 +1,4 @@
-/**
+/*
  * SingleOrNot lets the users choose the options they want to chose for recomending them bars and clubs
  * The options include Bars with Single Girls
  * Bars with Single Guys
@@ -9,20 +9,22 @@
 package com.example.android.findbar;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
-import android.widget.Toast;
 import android.widget.ToggleButton;
-
-import static com.example.android.findbar.R.styleable.View;
 
 public class SingleOrNot extends AppCompatActivity {
 
@@ -50,7 +52,7 @@ public class SingleOrNot extends AppCompatActivity {
     //Checkbox
     private CheckBox LowPrice, WithSingleGirls, SimilarToMe, LessCrowded ;
     private Button done;
-    private Button slidingDrawer;
+
 
     //SeekBars
     private SeekBar mGirlsmBoys ;
@@ -59,15 +61,45 @@ public class SingleOrNot extends AppCompatActivity {
     //Toggle Buttons
     private ToggleButton SearchSingles;
 
-    private AppDrawer appDrawer;
-
+    public static void dimBehind(PopupWindow popupWindow) {
+        View container;
+        if (popupWindow.getBackground() == null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                container = (View) popupWindow.getContentView().getParent();
+            } else {
+                container = popupWindow.getContentView();
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                container = (View) popupWindow.getContentView().getParent().getParent();
+            } else {
+                container = (View) popupWindow.getContentView().getParent();
+            }
+        }
+        Context context = popupWindow.getContentView().getContext();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
+        p.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND; // add a flag here instead of clear others
+        p.dimAmount = 0.3f;
+        wm.updateViewLayout(container, p);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_or_not);
         Button done = (Button)findViewById(R.id.Done);
-        slidingDrawer = (Button)findViewById(R.id.open_drawer);
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels;
+        int height = dm.heightPixels;
+        getWindow().setLayout((int) (width * 0.8), (int) (height * 0.8));
+        WindowManager.LayoutParams lp = getWindow().getAttributes();
+        lp.dimAmount = 0.6f;
+        getWindow().setAttributes(lp);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
 
         //CheckBoxes
         LowPrice = (CheckBox) findViewById(R.id.pintPrice);
@@ -90,11 +122,6 @@ public class SingleOrNot extends AppCompatActivity {
             ChangeCheckBoxDefaultValues();
         }
         addListenerOnButton();
-
-        addListenerOnSlider();
-
-        appDrawer = new AppDrawer(this);
-
 
 
         mGirlsmBoys.setOnSeekBarChangeListener(
@@ -146,18 +173,6 @@ public class SingleOrNot extends AppCompatActivity {
         });
     }
 
-
-
-    public void addListenerOnSlider(){
-        slidingDrawer = (Button)findViewById(R.id.open_drawer);
-        slidingDrawer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                appDrawer.switchDrawer(1);
-            }
-        });
-    }
-
     /**
      * Sets the values of the variables by reading the choices in the checkboxes
      */
@@ -167,26 +182,18 @@ public class SingleOrNot extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(LowPrice.isChecked()){
-                    pintPrice = true;
-                } else {
-                    pintPrice = false;
-                }
-                if(WithSingleGirls.isChecked()){
+                pintPrice = LowPrice.isChecked();
+               /* if(WithSingleGirls.isChecked()){
                     SingleGirls = true;
                 } else {
                     SingleGirls = false;
-                }
-                if(SimilarToMe.isChecked()){
-                    similarity = true ;
-                } else {
-                    similarity = false;
-                }
-                if(LessCrowded.isChecked()){
+                }*/
+                similarity = SimilarToMe.isChecked();
+                /*if(LessCrowded.isChecked()){
                     lessCrowded = true;
                 } else {
                     lessCrowded = false;
-                }
+                }*/
 
                 CheckBoxDatabase dbHelperWriter = new CheckBoxDatabase(getApplicationContext());
                 SQLiteDatabase db = dbHelperWriter.getWritableDatabase();
@@ -207,6 +214,7 @@ public class SingleOrNot extends AppCompatActivity {
             }
         });
     }
+
     /**
      * Moves to the progress bar activity
      */
@@ -220,7 +228,10 @@ public class SingleOrNot extends AppCompatActivity {
          background.execute(type, FbID , User_Gender , relationshipStatus, String.valueOf(User_Age));
         }
 
-        Intent intent = new Intent(this, ProgressBarActivity.class);
+        this.finish();
+
+
+       /* Intent intent = new Intent(this, MapListFragment.class);
         intent.putExtra("SingleGirls",SingleGirls);
         intent.putExtra("PintPrice",pintPrice);
         intent.putExtra("LessCrowded",lessCrowded);
@@ -228,9 +239,10 @@ public class SingleOrNot extends AppCompatActivity {
 
         intent.putExtra("UserGender",User_Gender);
         intent.putExtra("UserAge", User_Age);
-        startActivity(intent);
+        startActivity(intent);*/
 
     }
+
     /**
      * Converts Boolean values to int, 0 = 'False' and 1 = 'True'
      * @param value true , false
@@ -241,9 +253,10 @@ public class SingleOrNot extends AppCompatActivity {
             return 1;
         } else return 0;
     }
+
     /**
      * Checks if there is already some data in the checkbox database or not. So that we dont get an error if we try to read empty database
-     * @return
+     * true if data already exists @return
      */
     private boolean CheckerDataAlreadyExists(){
         CheckBoxDatabase dbHelper = new CheckBoxDatabase(getApplicationContext());
@@ -279,6 +292,7 @@ public class SingleOrNot extends AppCompatActivity {
             return true;}
 
     }
+
     /**
      * Saved the choices of the user into an sqlite databse so that if he returns to the same window, he still sees the same
      * choices as he made before
@@ -308,28 +322,29 @@ public class SingleOrNot extends AppCompatActivity {
                 null                                 // The sort order
         );
 
-//        while (cursor.moveToNext()) {
-//            LowPrice.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked))));
+        while (cursor.moveToNext()) {
+            LowPrice.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked))));
 //            LessCrowded.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked))));
 //            WithSingleGirls.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SingleGirlsChecked))));
-//            mGirlsmBoys.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys)));
-//            SimilarToMe.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked))));
-//            SearchSingles.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness))));
-//            CrowdedOrNot.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel)));
-//
-//        }
+            mGirlsmBoys.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys)));
+            ChooseByGirlsOrBoys = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys));
+            SimilarToMe.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked))));
+            SearchSingles.setChecked(convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness))));
+
+            CrowdedOrNot.setProgress(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel)));
+            Crowdedness = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel));
+
+        }
 
     }
+
     /**
      * Converts 1 or 0 into booleans
      * @param n
      * @return returns true or falso
      */
     private boolean convertIntToBool(int n){
-        if (n == 1) {
-            return true;
-        } else
-            return false;
+        return n == 1;
     }
 
 }

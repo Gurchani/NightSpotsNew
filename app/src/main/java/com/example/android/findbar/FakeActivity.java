@@ -9,15 +9,12 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 
 public class FakeActivity extends AppCompatActivity {
 
@@ -26,16 +23,41 @@ public class FakeActivity extends AppCompatActivity {
     EditText Longitude, Latitude;
     LocationManager locationManager;
     LocationListener locationListener;
+    SeekBar mGirlsmBoys;
+    int ChooseByGirlsOrBoys = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fake);
+        setContentView(R.layout.bottom_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mGirlsmBoys = (SeekBar) findViewById(R.id.seekBar2);
 
-        Longitude = (EditText)findViewById(R.id.Longitude);
-        Latitude = (EditText)findViewById(R.id.Latitude);
+        mGirlsmBoys.setOnSeekBarChangeListener(
+                new SeekBar.OnSeekBarChangeListener() {
+
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        ChooseByGirlsOrBoys = progress;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                }
+        );
+
+        mGirlsmBoys.setProgress(10);
+
+        Longitude = (EditText) findViewById(R.id.Longitude);
+        Latitude = (EditText) findViewById(R.id.Latitude);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -61,24 +83,22 @@ public class FakeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         };
-        if(Build.VERSION.SDK_INT >=Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 requestPermissions(new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION , Manifest.permission.ACCESS_COARSE_LOCATION ,
+                        Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.INTERNET
-                } , 10);
+                }, 10);
                 return;
             }
-        }
-        else
-        {
+        } else {
             configureButton();
         }
 
     }
 
-    public void CheckLocation(View view){
+    public void CheckLocation(View view) {
 
         String Longi = Longitude.getText().toString();
         String Lati = Latitude.getText().toString();
@@ -96,8 +116,18 @@ public class FakeActivity extends AppCompatActivity {
         }
     }
 
-    private void configureButton(){
-                locationManager.requestLocationUpdates("gps", 5000, 5, locationListener);
+    private void configureButton() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates("gps", 5000, 5, locationListener);
 
     }
 

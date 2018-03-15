@@ -1,18 +1,17 @@
 package com.example.android.findbar;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class SecondActivity extends AppCompatActivity {
 
-    private void goToMaps(){
+    private void goToMaps() {
         Intent mapIntent = new Intent(this, MapsActivity.class);
         startActivity(mapIntent);
     }
@@ -21,10 +20,10 @@ public class SecondActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
-        final TextView textView = (TextView)findViewById(R.id.JustTest);
+        final TextView textView = (TextView) findViewById(R.id.JustTest);
 
-        Spinner dropdown = (Spinner)findViewById(R.id.spinner1);
-        String[] items = new String[]{"Select" , "Bar", "Club", "Neighborhood"};
+        Spinner dropdown = (Spinner) findViewById(R.id.spinner1);
+        String[] items = new String[]{"Select", "Bar", "Club", "Neighborhood"};
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
         dropdown.setAdapter(adapter);
 
@@ -36,11 +35,11 @@ public class SecondActivity extends AppCompatActivity {
                     goToMaps();
                 }
 
-                if (selected.equalsIgnoreCase("Club")){
+                if (selected.equalsIgnoreCase("Club")) {
                     goToMaps();
                 }
 
-                if (selected.equalsIgnoreCase("Neighborhood")){
+                if (selected.equalsIgnoreCase("Neighborhood")) {
                     goToMaps();
                 }
             }

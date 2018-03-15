@@ -25,5 +25,11 @@
         <item>Uranus</item>
         <item>Neptune</item>
     </string-array>
+    <string name="title_activity_filters">Filters</string>
+    <string name="create_account">Create Account</string>
+    <string name="sign_in">Sign In</string>
+    <string name="profile">Profile</string>
+    <string name="test">Test</string>
+    <string name="todo">TODO</string>
 
 </resources>

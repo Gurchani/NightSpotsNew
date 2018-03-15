@@ -16,7 +16,8 @@ public class GlobalVariableDatabase extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + FeederClass.FeedEntry.Globals
             + " (" +
             FeederClass.FeedEntry.UserFbid + " INTEGER PRIMARY KEY," +
-            FeederClass.FeedEntry.UserGender + " TEXT, " +
+            FeederClass.FeedEntry.UserGender + " TEXT," +
+            FeederClass.FeedEntry.profilePicture + " TEXT," +
             FeederClass.FeedEntry.UserAge + " INTEGER);";
 
     private static final String SQL_DELETE_ENTRIES =

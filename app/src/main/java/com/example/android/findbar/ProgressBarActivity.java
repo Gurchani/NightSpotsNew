@@ -5,10 +5,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
 import org.json.JSONArray;
@@ -26,8 +25,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ProgressBarActivity extends AppCompatActivity {
 
@@ -47,12 +44,12 @@ public class ProgressBarActivity extends AppCompatActivity {
     int Cheapest;
 
     //Information about user
-    String User_Gender ;
+    String User_Gender;
     int User_Age;
 
     //UI Stuff
     ProgressBar pb;
-    Button Setting;
+
 
     //For Running the Async Task
     putDataFromServer putDatafromServer = new putDataFromServer();
@@ -63,7 +60,7 @@ public class ProgressBarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_progress_bar);
         readGlobals();
         pb = (ProgressBar) findViewById(R.id.progressBar2);
-        Setting = (Button) findViewById(R.id.button3);
+
 
         Intent intent = this.getIntent();
 
@@ -106,9 +103,9 @@ public class ProgressBarActivity extends AppCompatActivity {
             PintPriceTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.PintPriceChecked)));
             //LessCrowdedTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.LessCrowdedChecked)));
             SimilartoMeTicked = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.SimilarChecked)));
-//            GirlsOrBoys = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys));
-//            Singlenes = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness)));
-//            CrowdLevel = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel));
+            GirlsOrBoys = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys));
+            Singlenes = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness)));
+            CrowdLevel = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel));
         }
 
         cursor.close();
@@ -120,7 +117,7 @@ public class ProgressBarActivity extends AppCompatActivity {
         putDatafromServer.execute(type, sqlStatement);
     }
 
-    private String createSqlStatement(){
+    private String createSqlStatement() {
         String SGT = "";
         String PPT = "";
         String SMT = "";
@@ -138,28 +135,28 @@ public class ProgressBarActivity extends AppCompatActivity {
         } else {
             SGT = "";
         }*/
-        double ImportanceMultiplier = GirlsOrBoys/10;
-        if(GirlsOrBoys <= 50){
-            if(Singlenes){
+        double ImportanceMultiplier = GirlsOrBoys / 10;
+        if (GirlsOrBoys <= 50) {
+            if (Singlenes) {
                 SGT = "(" + ImportanceMultiplier + "* SingleBoys/(TotalBoys + TotalGirls))";
             } else {
                 SGT = "(" + ImportanceMultiplier + "* TotalBoys/(TotalBoys + TotalGirls))";
             }
         } else {
-            if(Singlenes){
+            if (Singlenes) {
                 SGT = "(" + ImportanceMultiplier + "* SingleGirls/(TotalBoys + TotalGirls))";
             } else {
                 SGT = "(" + ImportanceMultiplier + "* TotalGirls/(TotalBoys + TotalGirls))";
             }
         }
-        if (PintPriceTicked || LessCrowdedTicked || SimilartoMeTicked){
-                SGT = SGT + " + ";
+        if (PintPriceTicked || LessCrowdedTicked || SimilartoMeTicked) {
+            SGT = SGT + " + ";
         }
 
 
-        if(PintPriceTicked){
+        if (PintPriceTicked) {
             PPT = "(-0.2 * PintPrice)";
-            if (LessCrowdedTicked || SimilartoMeTicked){
+            if (LessCrowdedTicked || SimilartoMeTicked) {
                 PPT = PPT + " + ";
             }
             /*if (SingleGirlsTicked){
@@ -173,17 +170,17 @@ public class ProgressBarActivity extends AppCompatActivity {
             PPT = "";
         }
 
-        int crowdImportanceMultiplier = CrowdLevel/10;
-        if(CrowdLevel <= 50){
+        int crowdImportanceMultiplier = CrowdLevel / 10;
+        if (CrowdLevel <= 50) {
             LCT = "+(" + crowdImportanceMultiplier + "* (TotalGirls + TotalBoys))";
-            if (SimilartoMeTicked){
+            if (SimilartoMeTicked) {
                 LCT = LCT + " + ";
-           }
+            }
         } else {
             LCT = "+( (-1)* " + crowdImportanceMultiplier + "* (TotalGirls + TotalBoys))";
         }
 
-        String SqlStatement = "SELECT id, TotalBoys, TotalGirls, SingleBoys, SingleGirls, AvAge, PintPrice FROM barlivedata" + " ORDER BY "+ SGT + PPT + LCT + SMT +" DESC";
+        String SqlStatement = "SELECT id, TotalBoys, TotalGirls, SingleBoys, SingleGirls, AvAge, PintPrice FROM barlivedata" + " ORDER BY " + SGT + PPT + LCT + SMT + " DESC";
         //  + PPT + SMT + LCT + ")
 
         return SqlStatement;
@@ -191,18 +188,70 @@ public class ProgressBarActivity extends AppCompatActivity {
     }
 
     //If needed
-    public void moveToNextActivity(){
+    public void moveToNextActivity() {
         Intent intent = new Intent(this, MapListFragment.class);
         startActivity(intent);
     }
 
-    public void moveToSettingsActivity(View view){
+    public void moveToSettingsActivity(View view) {
         Intent intent = new Intent(this, SingleOrNot.class);
         startActivity(intent);
     }
 
+    //For Async Task to Insert Data in the Local Database
+    public boolean insertData(int Rank, int id, int TotalBoys, int TotalGirls, int SingleBoys, int SingleGirls, int AvAge, double PintPrice) {
+        LiveBarDatabase dbHelper = new LiveBarDatabase(getApplicationContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-    class putDataFromServer extends AsyncTask<String,Integer,String>{
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(FeederClass.FeedEntry.barId, id);
+        contentValues.put(FeederClass.FeedEntry.Ranking, Rank);
+        contentValues.put(FeederClass.FeedEntry.TotalBoys, TotalBoys);
+        contentValues.put(FeederClass.FeedEntry.TotalGirls, TotalGirls);
+        contentValues.put(FeederClass.FeedEntry.SingleBoys, SingleBoys);
+        contentValues.put(FeederClass.FeedEntry.SingleGirls, SingleGirls);
+        contentValues.put(FeederClass.FeedEntry.AvAge, AvAge);
+        contentValues.put(FeederClass.FeedEntry.PintPrice, PintPrice);
+
+        long result = db.replace(FeederClass.FeedEntry.LiveTableName, null, contentValues);
+        return result != -1;
+
+    }
+
+    //Read Global Variables
+    public void readGlobals() {
+        GlobalVariableDatabase dbHelperLive = new GlobalVariableDatabase(this);
+        SQLiteDatabase dbLive = dbHelperLive.getReadableDatabase();
+
+
+        String[] projectionLive = {
+                FeederClass.FeedEntry.UserGender,
+                FeederClass.FeedEntry.UserAge
+
+        };
+
+
+        Cursor cursorLive = dbLive.query(
+                FeederClass.FeedEntry.Globals,                     // The table to query
+                projectionLive,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        while (cursorLive.moveToNext()) {
+            User_Gender = cursorLive.getString(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.UserGender));
+            User_Age = cursorLive.getInt(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.UserAge));
+        }
+    }
+
+    private boolean convertIntToBool(int n) {
+        return n == 1;
+    }
+
+    class putDataFromServer extends AsyncTask<String, Integer, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -300,65 +349,5 @@ public class ProgressBarActivity extends AppCompatActivity {
 
             return inserterResult;
         }
-    }
-
-    //For Async Task to Insert Data in the Local Database
-    public boolean insertData(int Rank, int id, int TotalBoys , int TotalGirls ,int SingleBoys, int SingleGirls, int AvAge, double PintPrice){
-        LiveBarDatabase dbHelper = new LiveBarDatabase(getApplicationContext());
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(FeederClass.FeedEntry.barId, id);
-        contentValues.put(FeederClass.FeedEntry.Ranking, Rank);
-        contentValues.put(FeederClass.FeedEntry.TotalBoys, TotalBoys);
-        contentValues.put(FeederClass.FeedEntry.TotalGirls, TotalGirls);
-        contentValues.put(FeederClass.FeedEntry.SingleBoys, SingleBoys);
-        contentValues.put(FeederClass.FeedEntry.SingleGirls, SingleGirls);
-        contentValues.put(FeederClass.FeedEntry.AvAge, AvAge);
-        contentValues.put(FeederClass.FeedEntry.PintPrice, PintPrice);
-
-        long result = db.replace(FeederClass.FeedEntry.LiveTableName, null, contentValues);
-        if (result == -1){
-            return false;
-        } else {
-            return true;
-        }
-
-    }
-
-    //Read Global Variables
-    public void readGlobals(){
-        GlobalVariableDatabase dbHelperLive = new GlobalVariableDatabase(this);
-        SQLiteDatabase dbLive = dbHelperLive.getReadableDatabase();
-
-
-        String[] projectionLive = {
-                FeederClass.FeedEntry.UserGender,
-                FeederClass.FeedEntry.UserAge
-
-        };
-
-
-        Cursor cursorLive = dbLive.query(
-                FeederClass.FeedEntry.Globals,                     // The table to query
-                projectionLive,                               // The columns to return
-                null,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
-                null                                 // The sort order
-        );
-
-        while (cursorLive.moveToNext()) {
-            User_Gender = cursorLive.getString(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.UserGender));
-            User_Age = cursorLive.getInt(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.UserAge));
-        }
-    }
-
-    private boolean convertIntToBool(int n){
-        if (n == 1) {
-            return true;
-        } else
-            return false;
     }
 }

@@ -1,15 +1,14 @@
 package com.example.android.findbar;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,23 +18,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import static com.example.android.findbar.R.id.map;
-
 import org.json.JSONArray;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
+import static com.example.android.findbar.R.id.map;
 
-
+/**
+ * This is the class version of TestFragment
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     public String searchResult;
-
-    private GoogleMap mMap;
-
     boolean SingleGirlsTicked;
     boolean PintPriceTicked;
     boolean LessCrowdedTicked;
@@ -45,6 +37,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     JSONArray sqlBarFullData;
     ForegroundWorker foregroundWorker = new ForegroundWorker(this);
     ForegroundWorker foregroundUpdater = new ForegroundWorker(this);
+    private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
