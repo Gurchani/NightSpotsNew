@@ -1,9 +1,12 @@
 package com.example.android.findbar;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -23,6 +26,9 @@ public class UserProfile extends AppCompatActivity {
     Button logoutbutton;
     String profilePicture;
     ImageView imageView;
+    ProgressDialog progressDialog;
+    Drawable myPicture;
+    SharedPreferences spc;
 
     public static Drawable LoadImageFromWebOperations(String url) {
         try {
@@ -36,17 +42,16 @@ public class UserProfile extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        spc = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         readGlobals();
-        imageView = (ImageView) findViewById(R.id.profilePicture);
-        logoutbutton = (Button) findViewById(R.id.logout);
-
-        if (profilePicture != null) {
-            imageView.setImageDrawable(LoadImageFromWebOperations(profilePicture));
-        }
+        imageView = findViewById(R.id.profilePicture);
+        logoutbutton = findViewById(R.id.logout);
+        getImage getImage = new getImage();
+        getImage.execute(profilePicture);
 
         logoutbutton.setOnClickListener(new View.OnClickListener() {
 
@@ -61,10 +66,17 @@ public class UserProfile extends AppCompatActivity {
     }
 
     private void FacebookLogout() {
+
+
         LoginManager.getInstance().logOut();
     }
 
     private void moveToMainActivity() {
+        SharedPreferences.Editor editor = spc.edit();
+        boolean value = spc.getBoolean("LoginStatus", false);
+        editor.putBoolean("LoginStatus", false);
+
+        editor.commit();
         Intent myIntent = new Intent(this, MainActivity.class);
         startActivity(myIntent);
 
@@ -93,6 +105,31 @@ public class UserProfile extends AppCompatActivity {
         while (cursorLive.moveToNext()) {
             profilePicture = cursorLive.getString(cursorLive.getColumnIndexOrThrow(FeederClass.FeedEntry.profilePicture));
 
+        }
+    }
+
+    class getImage extends AsyncTask<String, Void, Drawable> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(UserProfile.this);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Drawable doInBackground(String... strings) {
+            return LoadImageFromWebOperations(strings[0]);
+
+        }
+
+        @Override
+        protected void onPostExecute(Drawable drawable) {
+            super.onPostExecute(drawable);
+            myPicture = drawable;
+            progressDialog.dismiss();
+            if (myPicture != null) {
+                imageView.setImageDrawable(myPicture);
+            }
         }
     }
 }

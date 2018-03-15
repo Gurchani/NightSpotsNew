@@ -15,6 +15,7 @@ public class FeederClass {
         public static final String LiveTableName = "LiveBarData";
         public static final String Globals = "Globals";
         public static final String CheckBox = "CheckBox";
+        public static final String RememerCheckBox = "RememberCheckBox";
 
         //Unique to local database
         public static final String barName = "Name";
@@ -43,6 +44,8 @@ public class FeederClass {
         public static final String  UserAge= "UserAge";
         public static final String UserFbid = "UserFbid";
         public static final String profilePicture = "profilePicture";
+        public static final String logInStatus = "loginStatus";
+
 
         //Variables for Checker Box
         public static final String SingleGirlsChecked = "SingleGirlsChecked";
@@ -60,6 +63,11 @@ public class FeederClass {
         public static final String Singleness = "Singularity";
         public static final String cheapness = "Cheapest";
         public static final String Happyhour = "Happyhour";
+
+        //Get Credentials
+        public static final String primary = "Prime";
+        public static final String emailId = "Email";
+        public static final String password = "Password";
 
     }
 }

@@ -84,7 +84,8 @@
         -->
         <activity android:name=".ProgressBarActivity" />
         <activity android:name=".UserProfile" />
-        <activity android:name=".SignupActivity"></activity>
+        <activity android:name=".SignupActivity" />
+        <activity android:name=".Prices"></activity>
     </application>
 
 </manifest>

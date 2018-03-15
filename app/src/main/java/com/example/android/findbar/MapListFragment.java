@@ -13,17 +13,26 @@ import android.widget.Button;
 public class MapListFragment extends AppCompatActivity implements BarMapView.OnFragmentInteractionListener, TestFragment.OnFragmentInteractionListener, ProgressBarFragment.OnFragmentInteractionListener {
     Fragment fragment;
     Button userProfile;
+    Button priceFilter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_list_fragment);
-        userProfile = (Button) findViewById(R.id.profile);
+        userProfile = findViewById(R.id.profile);
         userProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 gotoProfileActivity();
+            }
+        });
+
+        priceFilter = findViewById(R.id.priceFilterButton);
+        priceFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToPriceFilters();
             }
         });
         //Default View
@@ -67,6 +76,11 @@ public class MapListFragment extends AppCompatActivity implements BarMapView.OnF
     }
     public void changeSettings(View view){
         Intent ThirdIntent = new Intent(MapListFragment.this, SingleOrNot.class);
+        startActivity(ThirdIntent);
+    }
+
+    private void goToPriceFilters() {
+        Intent ThirdIntent = new Intent(MapListFragment.this, Prices.class);
         startActivity(ThirdIntent);
     }
 

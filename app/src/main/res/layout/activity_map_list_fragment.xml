@@ -47,7 +47,8 @@
         app:layout_constraintBottom_toTopOf="@+id/mapOrList"
         app:layout_constraintLeft_toLeftOf="parent"
         tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintLeft_creator="1" />
+        tools:layout_constraintLeft_creator="1"
+        tools:targetApi="lollipop" />
 
     <ImageView
         android:id="@+id/imageView3"
@@ -55,6 +56,7 @@
         android:layout_height="0dp"
         android:layout_marginBottom="6dp"
         android:layout_marginTop="9dp"
+        android:contentDescription="@string/todo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -67,11 +69,25 @@
 
     <Button
         android:id="@+id/profile"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="Profile"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="6dp" />
+
+    <Button
+        android:id="@+id/button3"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:onClick="goToPriceFilters"
+        android:text="@string/test"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profile"
+        tools:layout_editor_absoluteY="4dp" />
 
 
 </android.support.constraint.ConstraintLayout>
