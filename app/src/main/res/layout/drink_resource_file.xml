@@ -5,23 +5,23 @@
     android:layout_margin="5dp"
     android:padding="16dp">
 
-    <TextView
+    <CheckedTextView
         android:id="@+id/NameofDrink"
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
+        android:layout_gravity="center"
         android:fontFamily="monospace"
         android:textSize="42sp" />
 
 
-    <TextView
+   <!-- <CheckedTextView
         android:id="@+id/textPlacementofPrice"
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:fontFamily="monospace"
-        android:textSize="42sp" />
+        android:textSize="42sp" />-->
 
 </FrameLayout>

@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 /**
@@ -13,9 +14,11 @@ import android.widget.TextView;
 
 public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.drinkViewHolder> {
     private int numberOfItems;
+    final private listItemClickListener mOnClickListener;
 
-    public GreenAdapter(int itemsQuantity) {
+    public GreenAdapter(int itemsQuantity, listItemClickListener listener) {
         numberOfItems = itemsQuantity;
+        mOnClickListener = listener;
     }
 
     @Override
@@ -26,6 +29,9 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.drinkViewHol
         View view = inflater.inflate(layoutforItem, parent, false);
         drinkViewHolder drinkViewHolder = new drinkViewHolder(view);
         return drinkViewHolder;
+    }
+    public interface listItemClickListener {
+            void onListItemClick(int clickedItemIndex);
     }
 
     @Override
@@ -39,20 +45,26 @@ public class GreenAdapter extends RecyclerView.Adapter<GreenAdapter.drinkViewHol
     }
 
 
-    class drinkViewHolder extends RecyclerView.ViewHolder {
-        TextView priceOfdrink;
-        TextView nameOfdrink;
+    class drinkViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+        CheckedTextView nameOfdrink;
 
         public drinkViewHolder(View itemView) {
             super(itemView);
-            priceOfdrink = itemView.findViewById(R.id.textPlacementofPrice);
+
             nameOfdrink = itemView.findViewById(R.id.NameofDrink);
         }
 
         void bind(int price, String nameOfDrink) {
-            priceOfdrink.setText(String.valueOf(price));
+
             nameOfdrink.setText(nameOfDrink);
 
+        }
+
+        @Override
+        public void onClick(View view) {
+            int clickedPosition = getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
         }
     }
 }
