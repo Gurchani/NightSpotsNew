@@ -33,18 +33,27 @@
                 android:src="@drawable/logoblack" />
 
             <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
-                android:id="@+id/android_material_design_spinner"
+                android:id="@+id/Gender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Gender"
+                android:hint="le sexe"
                 android:textColorHint="#05ab9a"
                 app:met_floatingLabel="normal" />
+
+            <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                android:id="@+id/relationshipStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Statut marital"
+                android:textColorHint="#05ab9a"
+                app:met_floatingLabel="normal" />
+
 
             <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
                 android:id="@+id/AgeRange"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Age Range"
+                android:hint="Âge"
                 android:textColorHint="#05ab9a"
                 app:met_floatingLabel="normal" />
 
@@ -87,7 +96,7 @@
                     android:id="@+id/passwordSignup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Password"
+                    android:hint="Mot de passe"
                     android:inputType="textPassword" />
             </android.support.design.widget.TextInputLayout>
 
@@ -99,7 +108,7 @@
                 android:layout_marginBottom="24dp"
                 android:layout_marginTop="24dp"
                 android:padding="12dp"
-                android:text="Create Account" />
+                android:text="Je m'inscris" />
 
             <TextView
                 android:id="@+id/link_login"
@@ -107,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:gravity="center"
-                android:text="Already a member? Login"
+                android:text="déjà inscrit? s'identifier"
                 android:textSize="16dip" />
 
         </LinearLayout>

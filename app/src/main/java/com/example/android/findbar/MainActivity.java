@@ -1,7 +1,6 @@
 package com.example.android.findbar;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,15 +11,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -28,8 +24,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,13 +32,9 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -78,7 +68,6 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 /**
@@ -128,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     SharedPreferences LoginStatusTracker;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -138,8 +128,6 @@ public class MainActivity extends AppCompatActivity {
         //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
-
-
         getSupportActionBar().hide();
 
         progressDialog = new ProgressDialog(MainActivity.this,
@@ -147,9 +135,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         LoginStatusTracker = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        boolean userFirstTimeOpens = LoginStatusTracker.getBoolean("DescriptionPage1", true);
         boolean userFirstLogin = LoginStatusTracker.getBoolean("LoginStatus", false);
 
+        if (userFirstTimeOpens) {
+            goToSplashScreenActivity();
+        }
+
         if (userFirstLogin) {
+            updateData(getCityCountry());
+            beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is i
             goToSecondActivity();
         }
 
@@ -175,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         }
         emailText = findViewById(R.id.input_email);
         _passwordText = findViewById(R.id.input_password);
-        _loginButton = findViewById(R.id.login_button);
+        _loginButton = findViewById(R.id.btn_login);
         _signupLink = findViewById(R.id.link_signup);
         RememberMeCheckBox = findViewById(R.id.RememberCheckbox);
 
@@ -191,9 +186,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         readInCredentials();
+        //loginWithFacebook();
+    }
 
+    //In Future you may consider to use the log in with facebook option
+    private void loginWithFacebook() {
         //Facebook Button
-        loginButton = findViewById(R.id.login_button);
+
+        /*loginButton = findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile",  //Get Permissions from Facebook
                 "user_likes", "user_birthday"));
         AppEventsLogger.activateApp(this);
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(LoginResult loginResult) {
                 StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(policy);
-                /*Graph Request for getting the list of Pages that User has liked*/
+                *//*Graph Request for getting the list of Pages that User has liked*//*
 
                 FacebookUserInfo facebookUserInfo = new FacebookUserInfo();
                 facebookUserInfo.execute(loginResult.getAccessToken());
@@ -223,7 +223,9 @@ public class MainActivity extends AppCompatActivity {
             public void onError(FacebookException error) {
                 //textView.setText("Error Encoutered");
             }
-        });
+        });*/
+
+
     }
 
     /**
@@ -250,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
     private void doSomethingWithLoginResult() {
         if (selfLoginResult.equals("")) {
             Context context = getApplicationContext();
-            CharSequence text = "Wrong Email or Password";
+            CharSequence text = "Mauvais courriel ou mot de passe";
             int duration = Toast.LENGTH_SHORT;
 
             Toast toast = Toast.makeText(context, text, duration);
@@ -260,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                 goToSecondActivity();
             } else {
                 Context context = getApplicationContext();
-                CharSequence text = "Wrong Email or Password";
+                CharSequence text = "Mauvais courriel ou mot de passe";
                 int duration = Toast.LENGTH_SHORT;
 
                 Toast toast = Toast.makeText(context, text, duration);
@@ -461,6 +463,11 @@ public class MainActivity extends AppCompatActivity {
         SecondIntent.putExtra("User_Age", User_Age);
         SecondIntent.putExtra("User_id", User_id);
         startActivity(SecondIntent);
+    }
+
+    public void goToSplashScreenActivity() {
+        Intent TheIntent = new Intent(MainActivity.this, DescriptionActivity.class);
+        startActivity(TheIntent);
     }
 
     /**
@@ -749,7 +756,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-
             _loginButton.setEnabled(false);
             progressDialog.show();
             progressDialog.setIndeterminate(true);

@@ -127,7 +127,7 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mapView = (MapView) mView.findViewById(R.id.map);
+        mapView = mView.findViewById(R.id.map);
 
         if (mapView != null) {
             mapView.onCreate(null);
@@ -207,8 +207,9 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
         updateData();
 
     }
-
     //Reads both live and static data for bars
+    //Shows only the bars that fill the criterea
+    //Edited on 29-4-2018
     public void readData(){
         localDatabase dbHelper = new localDatabase(getActivity());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -253,8 +254,11 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
             BarName = cursor.getString(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.barName));
             barRank = determineRank(id);
 
-            GBU = DetermineGBU(barRank, totalBars);
-            addMarkers(mMap, Latitude, Longitude, GBU);
+
+            if (barRank != 0) {
+                //GBU = DetermineGBU(barRank, totalBars);
+                addMarkers(mMap, Latitude, Longitude, 0);
+            }
         }
         cursor.close();
     }
@@ -397,10 +401,10 @@ public class TestFragment extends Fragment implements OnMapReadyCallback, Google
     public View getInfoWindow(Marker marker) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.infowindow, null);
 
-        TextView barName = (TextView) view.findViewById(R.id.barName);
+        TextView barName = view.findViewById(R.id.barName);
         barName.setText(marker.getTitle());
 
-        TextView barStats = (TextView) view.findViewById(R.id.SingleGirls);
+        TextView barStats = view.findViewById(R.id.SingleGirls);
         barStats.setText(marker.getSnippet());
         return view;
     }

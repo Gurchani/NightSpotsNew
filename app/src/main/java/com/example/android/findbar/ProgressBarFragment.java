@@ -3,6 +3,7 @@ package com.example.android.findbar;
 import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -29,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
@@ -46,6 +48,9 @@ public class ProgressBarFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    SharedPreferences UsersChoices;
+    SharedPreferences.Editor editor;
+
     //Choices made by user through tick boxes
     boolean SingleGirlsTicked;
     boolean PintPriceTicked;
@@ -57,7 +62,7 @@ public class ProgressBarFragment extends Fragment {
     boolean Singlenes;
     int CrowdLevel;
     int SimilarityLevel;
-    int Age;
+    int AgePreferance;
     int HappyHour;
     int Cheapest;
 
@@ -67,6 +72,13 @@ public class ProgressBarFragment extends Fragment {
 
     //UI Stuff
     ProgressBar pb;
+
+    //Get User Choices (27-4-2018)
+    String AgeChosen;
+    String GenderChosen;
+    Boolean pintPriceChoice;
+    Boolean singlesnessChoice;
+
 
 
     //For Running the Async Task
@@ -111,19 +123,33 @@ public class ProgressBarFragment extends Fragment {
 
         super.onCreate(savedInstanceState);
 
+        UsersChoices = getApplicationContext().getSharedPreferences("UserChoices", MODE_PRIVATE);
+        AgeChosen = UsersChoices.getString("AgePref", "18 à 25");
+        GenderChosen = UsersChoices.getString("GenderPref", "Plus de filles");
+        pintPriceChoice = UsersChoices.getBoolean("PriceChosen", true);
+        singlesnessChoice = UsersChoices.getBoolean("SinglenessChosen", true);
+
+
         readGlobals();
 
         /*SingleGirlsTicked = intent.getBooleanExtra("SingleGirls", true);
         PintPriceTicked = intent.getBooleanExtra("PintPrice", true);
         LessCrowdedTicked = intent.getBooleanExtra("LessCrowded", true);
         SimilartoMeTicked = intent.getBooleanExtra("SimilarToMe", false);*/
-
-        getUserChoices();
-        String sqlStatement = createSqlStatement();
+        deletepreviousDatafromLiveBarDatabase();
+        //getUserChoices();
+        String sqlStatement = makeSqlStatement();
         sendTheStatement(sqlStatement);
     }
 
-    private void getUserChoices() {
+    private void deletepreviousDatafromLiveBarDatabase() {
+        LiveBarDatabase dbHelper = new LiveBarDatabase(getApplicationContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM LiveBarData");
+        db.close();
+    }
+
+    /*private void getUserChoices() {
         CheckBoxDatabase dbHelper = new CheckBoxDatabase(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -135,6 +161,8 @@ public class ProgressBarFragment extends Fragment {
                 FeederClass.FeedEntry.mGirlsmBoys,
                 FeederClass.FeedEntry.Singleness,
                 FeederClass.FeedEntry.PintPriceChecked,
+                FeederClass.FeedEntry.CrowdLevel,
+                FeederClass.FeedEntry.AvAge
         };
 
         Cursor cursor = db.query(
@@ -155,21 +183,58 @@ public class ProgressBarFragment extends Fragment {
             GirlsOrBoys = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.mGirlsmBoys));
             Singlenes = convertIntToBool(cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.Singleness)));
             CrowdLevel = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.CrowdLevel));
+            AgePreferance = cursor.getInt(cursor.getColumnIndexOrThrow(FeederClass.FeedEntry.AvAge));
+
         }
-    }
+    }*/
 
     private void sendTheStatement(String sqlStatement) {
         String type = "GetSortedBars";
         putDatafromServer.execute(type, sqlStatement);
     }
 
-    private String createSqlStatement() {
+    //This is the newest Sql Statement (TimeStamp: 27-4-2018)
+    private String makeSqlStatement() {
+
+
+        String AgeCondition = " AvAge = " + "\"" + TranslatetoEnglish(AgeChosen) + "\"" + " AND";
+        String GenderCondition = "";
+        String PriceCondition = "";
+        String SinglenessCondition = "";
+
+
+        if (TranslatetoEnglish(GenderChosen).matches("More Boys")) {
+            GenderCondition = " 100 * (TotalBoys/(TotalGirls + TotalBoys)) > 50 AND";
+        } else {
+            GenderCondition = " 100 * (TotalGirls/(TotalGirls + TotalBoys)) > 50 AND";
+        }
+
+        if (pintPriceChoice) {
+            PriceCondition = " PintPrice < 5";
+        } else PriceCondition = " PintPrice > 1";
+
+        if (singlesnessChoice) {
+            if (TranslatetoEnglish(GenderChosen).matches("More Boys")) {
+                SinglenessCondition = " AND 100 * SingleBoys/TotalBoys > 50 ";
+            } else {
+                SinglenessCondition = " AND 100 * SingleGirls/TotalGirls > 50 ";
+            }
+        } else {
+            SinglenessCondition = "";
+        }
+
+        String sqlStatement = "SELECT id, TotalBoys, TotalGirls, SingleBoys, SingleGirls, AvAge, PintPrice FROM barlivedata where " + AgeCondition + GenderCondition + PriceCondition + SinglenessCondition;
+        return sqlStatement;
+    }
+
+
+    /*private String createSqlStatement() {
         String SGT = "";
         String PPT = "";
         String SMT = "";
         String LCT = "";
 
-        /*if(SingleGirlsTicked){
+        *//*if(SingleGirlsTicked){
             if (User_Gender.equalsIgnoreCase("female")){
                 SGT = "(.5 * SingleBoys)";
             } else {
@@ -180,36 +245,36 @@ public class ProgressBarFragment extends Fragment {
             }
         } else {
             SGT = "";
-        }*/
+        }*//*
         double ImportanceMultiplier = GirlsOrBoys / 10;
         if (GirlsOrBoys <= 50) {
             if (Singlenes) {
-                SGT = "(" + ImportanceMultiplier + "* SingleBoys/(TotalBoys + TotalGirls))";
+                SGT = "(" + ImportanceMultiplier + "* SingleBoys/(TotalBoys + TotalGirls)) DESC";
             } else {
-                SGT = "(" + ImportanceMultiplier + "* TotalBoys/(TotalBoys + TotalGirls))";
+                SGT = "(" + ImportanceMultiplier + "* TotalBoys/(TotalBoys + TotalGirls)) DESC";
             }
         } else {
             if (Singlenes) {
-                SGT = "(" + ImportanceMultiplier + "* SingleGirls/(TotalBoys + TotalGirls))";
+                SGT = "(" + ImportanceMultiplier + "* SingleGirls/(TotalBoys + TotalGirls)) DESC";
             } else {
-                SGT = "(" + ImportanceMultiplier + "* TotalGirls/(TotalBoys + TotalGirls))";
+                SGT = "(" + ImportanceMultiplier + "* TotalGirls/(TotalBoys + TotalGirls)) DESC";
             }
         }
-        if (PintPriceTicked || LessCrowdedTicked || SimilartoMeTicked) {
+        if (PintPriceTicked) {
             SGT = SGT + " + ";
         }
 
 
         if (PintPriceTicked) {
             PPT = "(-0.2 * PintPrice)";
-            if (LessCrowdedTicked || SimilartoMeTicked) {
+            if (LessCrowdedTicked) {
                 PPT = PPT + " + ";
             }
-            /*if (SingleGirlsTicked){
+            *//*if (SingleGirlsTicked){
                 PPT = "+(0.2 * PintPrice)";
             } else {
                 PPT = "(0.2 * PintPrice)";
-            }*/
+            }*//*
 
 
         } else {
@@ -218,10 +283,10 @@ public class ProgressBarFragment extends Fragment {
 
         int crowdImportanceMultiplier = CrowdLevel / 10;
         if (CrowdLevel <= 50) {
-            LCT = "+(" + crowdImportanceMultiplier + "* (TotalGirls + TotalBoys))";
-            if (SimilartoMeTicked) {
+            LCT = ",(" + crowdImportanceMultiplier + "* (TotalGirls + TotalBoys))";
+            *//*if (SimilartoMeTicked) {
                 LCT = LCT + " + ";
-            }
+            }*//*
         } else {
             LCT = "+( (-1)* " + crowdImportanceMultiplier + "* (TotalGirls + TotalBoys))";
         }
@@ -232,14 +297,14 @@ public class ProgressBarFragment extends Fragment {
         return SqlStatement;
 
     }
-
+*/
     public void moveToNextActivity() {
         MapListFragment activity = (MapListFragment) getActivity();
         activity.changeViewType();
     }
 
     //For Async Task to Insert Data in the Local Database
-    public boolean insertData(int Rank, int id, int TotalBoys, int TotalGirls, int SingleBoys, int SingleGirls, int AvAge, double PintPrice) {
+    public boolean insertData(int Rank, int id, int TotalBoys, int TotalGirls, int SingleBoys, int SingleGirls, String AvAge, double PintPrice) {
         LiveBarDatabase dbHelper = new LiveBarDatabase(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -255,6 +320,35 @@ public class ProgressBarFragment extends Fragment {
 
         long result = db.replace(FeederClass.FeedEntry.LiveTableName, null, contentValues);
         return result != -1;
+
+    }
+
+    private String TranslatetoEnglish(String s) {
+        String EnglishTranslation = "";
+        if (s.matches("Plus de garçons")) {
+            return "More Boys";
+        }
+        if (s.matches("Plus de filles")) {
+            return "More Girls";
+        }
+        if (s.matches("18 à 25")) {
+            return "18 to 25";
+        }
+        if (s.matches("25 à 30")) {
+            return "25 to 30";
+        }
+        if (s.matches("30 à 40")) {
+            return "30 to 40";
+        }
+        if (s.matches("40 à 50")) {
+            return "40 to 50";
+        }
+        if (s.matches("Plus de 50")) {
+            return "More than 50";
+        }
+
+        return EnglishTranslation;
+
 
     }
 
@@ -296,7 +390,7 @@ public class ProgressBarFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_progress_bar, container, false);
-        pb = (ProgressBar) view.findViewById(R.id.progressBar4);
+        pb = view.findViewById(R.id.progressBar4);
         return view;
     }
 
@@ -395,6 +489,7 @@ public class ProgressBarFragment extends Fragment {
                     //noinspection WrongThread
                     pb.setMax(jsonArray.length() - 1);
 
+
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonobject = jsonArray.getJSONObject(i);
                         String id = jsonobject.getString("id");
@@ -408,7 +503,7 @@ public class ProgressBarFragment extends Fragment {
                         publishProgress(i);
 
 
-                        boolean insetData = insertData(i + 1, Integer.valueOf(id), Integer.valueOf(TotalBoys), Integer.valueOf(TotalGirls), Integer.valueOf(SingleBoys), Integer.valueOf(SingleGirls), Integer.valueOf(AvAge), Double.valueOf(PintPrice));
+                        boolean insetData = insertData(i + 1, Integer.valueOf(id), Integer.valueOf(TotalBoys), Integer.valueOf(TotalGirls), Integer.valueOf(SingleBoys), Integer.valueOf(SingleGirls), AvAge, Double.valueOf(PintPrice));
                         if (insetData) {
                             inserterResult = inserterResult + "true ";
                         } else {

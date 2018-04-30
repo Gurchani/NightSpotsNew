@@ -34,6 +34,7 @@ dependencies {
     implementation files('libs/gson-2.8.0.jar')
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:27.0.2'
+    //implementation 'com.facebook.android:facebook-login'
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
     //noinspection GradleCompatible
     // compile 'com.google.android.gms:play-services:7.5.0'

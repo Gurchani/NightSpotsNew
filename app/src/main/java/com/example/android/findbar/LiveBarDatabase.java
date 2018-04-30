@@ -1,18 +1,8 @@
 package com.example.android.findbar;
 
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created by Gurchani on 5/8/2017.
@@ -21,9 +11,6 @@ import java.util.StringTokenizer;
 public class LiveBarDatabase extends SQLiteOpenHelper{
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "barLiveData";
-    SQLiteDatabase localData;
-
-
     private static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + FeederClass.FeedEntry.LiveTableName
             + " (" +
             FeederClass.FeedEntry.barId + " INTEGER PRIMARY KEY," +
@@ -34,12 +21,11 @@ public class LiveBarDatabase extends SQLiteOpenHelper{
             FeederClass.FeedEntry.TotalGirls + " INTEGER, "+
             FeederClass.FeedEntry.SingleGirls + " INTEGER, " +
             FeederClass.FeedEntry.SingleBoys + " INTEGER, " +
-            FeederClass.FeedEntry.AvAge + " INTEGER, " +
+            FeederClass.FeedEntry.AvAge + " TEXT, " +
             FeederClass.FeedEntry.PintPrice + " REAL);";
-
-
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + FeederClass.FeedEntry.LiveTableName;
+    SQLiteDatabase localData;
 
     public LiveBarDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

@@ -58,11 +58,13 @@ public class SignupActivity extends AppCompatActivity {
     Button _signupButton;
     TextView _loginLink;
 
-    String[] SPINNERLIST = {"Male", "Female"};
-    String[] AgeRange = {"18 to 25", "25 to 30", "30 to 40", "40 to 50", "Above 50"};
+    String[] SPINNERLIST = {"Masculin", "Féminin"};
+    String[] AgeRange = {"18 à 25", "25 à 30", "30 à 40", "40 à 50", "Plus de 50"};
+    String[] relationShipStatus = {"Célibataire", "Pas célibataire"};
 
     String UserAge = "";
     String UserGender = "";
+    String UserRelationshipStatus = "";
     String email;
     String password;
 
@@ -72,15 +74,18 @@ public class SignupActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        getSupportActionBar().hide();
+
 
         LoginStatusTracker = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
 
-        //Gender
+        //Gender Spinner
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, SPINNERLIST);
-        final MaterialBetterSpinner GenderSpinner = findViewById(R.id.android_material_design_spinner);
+        final MaterialBetterSpinner GenderSpinner = findViewById(R.id.Gender);
         GenderSpinner.setAdapter(arrayAdapter);
         GenderSpinner.addTextChangedListener(new TextWatcher() {
             @Override
@@ -101,8 +106,32 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
+        //Relationship Status Spinner
+        ArrayAdapter<String> singleOrNot = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, relationShipStatus);
+        final MaterialBetterSpinner rStatus = findViewById(R.id.relationshipStatus);
+        rStatus.setAdapter(singleOrNot);
+        rStatus.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        //Age Range
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                UserRelationshipStatus = rStatus.getText().toString();
+                Log.d("value", UserRelationshipStatus);
+
+            }
+        });
+
+
+        //Age Range Spinner
         ArrayAdapter<String> Ages = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, AgeRange);
         final MaterialBetterSpinner Age = findViewById(R.id.AgeRange);
@@ -134,7 +163,11 @@ public class SignupActivity extends AppCompatActivity {
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                verifyCapatchAndStartSignup();
+                if (validate()) {
+                    verifyCapatchAndStartSignup();
+                } else {
+                    _signupButton.setEnabled(true);
+                }
             }
         });
         _loginLink.setOnClickListener(new View.OnClickListener() {
@@ -161,14 +194,15 @@ public class SignupActivity extends AppCompatActivity {
                 R.style.AppTheme_Dark_Dialog);
 
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Creating Account...");
+        progressDialog.setMessage("Création de votre compte...");
+        //The Progress dialogue will be closed by the backend process when the data is already sent
         progressDialog.show();
 
         email = _emailText.getText().toString();
         password = _passwordText.getText().toString();
         putSignupInServer putSignupInServer = new putSignupInServer();
-        putInGlobals(email, UserGender, UserAge, "");
-        putSignupInServer.execute(email, password, UserGender, UserAge);
+        putInGlobals(email, UserGender, UserAge);
+        putSignupInServer.execute(email, password, UserGender, UserAge, UserRelationshipStatus);
     }
 
     private void verifyCapatchAndStartSignup() {
@@ -224,6 +258,18 @@ public class SignupActivity extends AppCompatActivity {
         } else {
             _emailText.setError(null);
         }
+        if (UserGender.isEmpty() || UserRelationshipStatus.isEmpty() || UserAge.isEmpty()) {
+            Context context = this;
+            CharSequence text = "Un ou plusieurs champs sont laissés vides";
+            int duration = Toast.LENGTH_LONG;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+            valid = false;
+        }
+        if (UserRelationshipStatus.isEmpty()) {
+        }
+        if (UserAge.isEmpty()) {
+        }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
             _passwordText.setError("between 4 and 10 alphanumeric characters");
@@ -235,13 +281,32 @@ public class SignupActivity extends AppCompatActivity {
         return valid;
     }
 
-    private void putInGlobals(String Email, String Gender, String Age, String profilePic) {
+    private String translateToEnglish(String s) {
+        if (s.matches("Célibataire")) {
+            return "Single";
+        } else if (s.matches("Pas célibataire")) {
+            return "Not Single";
+        } else if (s.matches("Masculin")) {
+            return "Male";
+        } else if (s.matches("Féminin")) {
+            return "Female";
+        } else if (s.equals("Plus de 50")) {
+            return "Over 50";
+        }
+        if (s.contains("à")) {
+            return s.replaceAll("à", "to");
+        } else return s;
+
+    }
+
+    //Globals are irrelevant for the moment but will be utilized in the future and modified accordingly
+    private void putInGlobals(String Email, String Gender, String Age) {
         GlobalVariableDatabase dbHelper = new GlobalVariableDatabase(getApplicationContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(FeederClass.FeedEntry.UserFbid, Email);
         contentValues.put(FeederClass.FeedEntry.UserGender, Gender);
-        contentValues.put(FeederClass.FeedEntry.profilePicture, profilePic);
+        //contentValues.put(FeederClass.FeedEntry.profilePicture, profilePic);
         contentValues.put(FeederClass.FeedEntry.UserAge, Age);
         long result = db.replace(FeederClass.FeedEntry.Globals, null, contentValues);
         db.close();
@@ -249,7 +314,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private void askThemToVerifyEmail() {
         Context context = this;
-        CharSequence text = "Account Created";
+        CharSequence text = "Compte créé";
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
@@ -307,8 +372,9 @@ public class SignupActivity extends AppCompatActivity {
 
             String Email = params[0];
             String Password = params[1];
-            String Gender = params[2];
-            String Age = params[3];
+            String Gender = translateToEnglish(params[2]);
+            String Age = translateToEnglish(params[3]);
+            String relationshipStatus = translateToEnglish(params[4]);
 
             String salt = generateSalt();
             String hashedPassword = HashPassword(Password, salt);
@@ -331,6 +397,7 @@ public class SignupActivity extends AppCompatActivity {
                         + URLEncoder.encode("Password", "UTF-8") + "=" + URLEncoder.encode(hashedPassword, "UTF-8") + "&"
                         + URLEncoder.encode("Gender", "UTF-8") + "=" + URLEncoder.encode(Gender, "UTF-8") + "&"
                         + URLEncoder.encode("Age", "UTF-8") + "=" + URLEncoder.encode(Age, "UTF-8") + "&"
+                        + URLEncoder.encode("RelationShipStatus", "UTF-8") + "=" + URLEncoder.encode(relationshipStatus, "UTF-8") + "&"
                         + URLEncoder.encode("Salt", "UTF-8") + "=" + URLEncoder.encode(salt, "UTF-8");
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();

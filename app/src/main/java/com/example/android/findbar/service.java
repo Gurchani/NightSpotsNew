@@ -3,6 +3,7 @@
  */
 
 package com.example.android.findbar;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +26,7 @@ public class service  extends Service {
     private static final float LOCATION_DISTANCE = 10f;
     public double UserLong;
     public double UserLat;
-    public int FbID = 0;
+    public String userDistinctId = "";
     int oldValue = 0;
     LocationListener[] mLocationListeners = new LocationListener[]{
             new LocationListener(LocationManager.GPS_PROVIDER),
@@ -86,9 +87,8 @@ public class service  extends Service {
     private void takeDataFromServer(int barid) {
         String type = "takeOutLiveData";
         String bar = String.valueOf(barid);
-        String fbid = String.valueOf(FbID);
         BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-        backgroundWorker.execute(type, fbid , bar );
+        backgroundWorker.execute(type, userDistinctId, bar);
     }
 
     /**
@@ -98,9 +98,8 @@ public class service  extends Service {
     private void sendDatatoServer(int i) {
         String type = "insertLiveData";
         String bar = String.valueOf(i);
-        String fbid = String.valueOf(FbID);
         BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-        backgroundWorker.execute(type, fbid , bar);
+        backgroundWorker.execute(type, userDistinctId, bar);
     }
 
     /**
@@ -275,5 +274,4 @@ public class service  extends Service {
             Log.e(TAG, "onStatusChanged: " + provider);
         }
     }
-
 }

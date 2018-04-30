@@ -60,14 +60,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:alpha="1"
-                    android:hint="Password"
+                    android:hint="Mot de passe"
                     android:inputType="textPassword" />
 
                 <CheckBox
                     android:id="@+id/RememberCheckbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Remember Me" />
+                    android:text="Se souvenir de moi" />
             </android.support.design.widget.TextInputLayout>
 
 
@@ -80,7 +80,7 @@
                 android:alpha="1"
                 android:onClick="login"
                 android:padding="12dp"
-                android:text="Login" />
+                android:text="S'identifier" />
 
             <TextView
                 android:id="@+id/link_signup"
@@ -89,11 +89,12 @@
                 android:layout_marginBottom="24dp"
                 android:alpha="1"
                 android:gravity="center"
-                android:text="No account yet? Create one"
+                android:linksClickable="true"
+                android:text="s'abonner"
                 android:textSize="16dip" />
 
 
-            <com.facebook.login.widget.LoginButton
+            <!--<com.facebook.login.widget.LoginButton
                 android:id="@+id/login_button"
                 android:layout_width="250dp"
                 android:layout_height="150dp"
@@ -101,7 +102,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:alpha="1" />
+                android:alpha="1" />-->
         </LinearLayout>
     </FrameLayout>
 </ScrollView>
