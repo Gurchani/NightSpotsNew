@@ -338,7 +338,7 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
         if(type.equals("insertLiveData")) {
 
             try {
-                String FbID = params[1];
+                String email = params[1];
                 String bar = params[2];
                 URL url = new URL(insertLiveData);
                 HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
@@ -351,7 +351,7 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
 
-                String post_data = URLEncoder.encode("FbID", "UTF-8")+"="+ URLEncoder.encode(FbID, "UTF-8")+"&"
+                String post_data = URLEncoder.encode("Email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&"
                         + URLEncoder.encode("bar", "UTF-8")+"="+ URLEncoder.encode(bar, "UTF-8");
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();
@@ -548,6 +548,7 @@ public class BackgroundWorker extends AsyncTask<String,Void,String> {
 
 
     }
+
 
     private String jsonParser(JSONObject jsonObject , String title){
         try {

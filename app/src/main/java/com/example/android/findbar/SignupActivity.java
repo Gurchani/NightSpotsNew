@@ -322,6 +322,8 @@ public class SignupActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                updateData(getCityCountry());
+                beginLocationService();
                 goToSecondActivity();
             }
         }, 3500);
@@ -364,6 +366,36 @@ public class SignupActivity extends AppCompatActivity {
             buf.append(ch);
         }
         return buf.toString();
+    }
+
+    /**
+     * Start service which tells the Mysql Database if the user is inside a bar or not
+     */
+    private void beginLocationService() {
+        Intent ntent = new Intent(this, service.class);
+        ntent.putExtra("Email", email);
+        this.startService(ntent);
+    }
+
+    /**
+     * Method takes the GPS location of the user and returns the country
+     *
+     * @return
+     */
+    public String getCityCountry() {
+        return "Paris,France";
+    }
+
+    /**
+     * Gets the Bar-id, Name, Price of Pint, Radius, Longitude, Latitude
+     * Will be more useful when app is introduced in more than one city and it will be necessary to customize the bar data according to location of user
+     *
+     * @param cityCountry
+     */
+    private void updateData(String cityCountry) {
+        String type = "getBarLocations";
+        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+        backgroundWorker.execute(type, cityCountry);
     }
 
     class putSignupInServer extends AsyncTask<String, Integer, String> {
@@ -516,4 +548,6 @@ public class SignupActivity extends AppCompatActivity {
 
         }
     }
+
+
 }

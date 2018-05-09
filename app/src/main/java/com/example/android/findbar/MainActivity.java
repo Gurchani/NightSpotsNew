@@ -1,6 +1,7 @@
 package com.example.android.findbar;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -120,28 +121,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        //Remove title bar
-        //this.requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-
-//Remove notification bar
-        //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-
+        //This is to remove the bar that has the name of the app
         getSupportActionBar().hide();
-
-        progressDialog = new ProgressDialog(MainActivity.this,
-                R.style.AppTheme_Dark_Dialog);
-
-
+        progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
+        //See if user is already logged-in from the sharedpreferance
         LoginStatusTracker = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         boolean userFirstTimeOpens = LoginStatusTracker.getBoolean("DescriptionPage1", true);
         boolean userFirstLogin = LoginStatusTracker.getBoolean("LoginStatus", false);
-
+        //Splash Screen - This only opens the first time user logs in
         if (userFirstTimeOpens) {
             goToSplashScreenActivity();
         }
-
+        //if user is logging in for the first time
         if (userFirstLogin) {
             updateData(getCityCountry());
             beginLocationService(); //Starts a service in the background which keeps telling the serverdatabase if this user is i
@@ -188,6 +179,45 @@ public class MainActivity extends AppCompatActivity {
         readInCredentials();
         //loginWithFacebook();
     }
+
+    /**
+     * This shall take user to the splash screen if he is loggin in for the first time
+     */
+    public void goToSplashScreenActivity() {
+        Intent TheIntent = new Intent(MainActivity.this, DescriptionActivity.class);
+        startActivity(TheIntent);
+    }
+
+    /**
+     * Method takes the GPS location of the user and returns the country
+     *
+     * @return
+     */
+    public String getCityCountry() {
+        return "Paris,France";
+    }
+
+    /**
+     * Gets the Bar-id, Name, Price of Pint, Radius, Longitude, Latitude
+     * Will be more useful when app is introduced in more than one city and it will be necessary to customize the bar data according to location of user
+     *
+     * @param cityCountry
+     */
+    private void updateData(String cityCountry) {
+        String type = "getBarLocations";
+        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+        backgroundWorker.execute(type, cityCountry);
+    }
+
+    /**
+     * Start service which tells the Mysql Database if the user is inside a bar or not
+     */
+    private void beginLocationService() {
+        Intent ntent = new Intent(this, service.class);
+        ntent.putExtra("FbID", User_id);
+        this.startService(ntent);
+    }
+
 
     //In Future you may consider to use the log in with facebook option
     private void loginWithFacebook() {
@@ -259,6 +289,10 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         } else if (selfLoginResult.equals("Success")) {
             if (validateTheLogin()) {
+                updateData(getCityCountry());
+                if (!isMyServiceRunning(service.class)) {
+                    beginLocationService();
+                }
                 goToSecondActivity();
             } else {
                 Context context = getApplicationContext();
@@ -429,26 +463,6 @@ public class MainActivity extends AppCompatActivity {
         backgroundWorker.execute(type, FbID, Likes);
     }
 
-    /**
-     * Gets the Bar-id, Name, Price of Pint, Radius, Longitude, Latitude
-     * Will be more useful when app is introduced in more than one city and it will be necessary to customize the bar data according to location of user
-     *
-     * @param cityCountry
-     */
-    private void updateData(String cityCountry) {
-        String type = "getBarLocations";
-        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-        backgroundWorker.execute(type, cityCountry);
-    }
-
-    /**
-     * Method takes the GPS location of the user and returns the country
-     *
-     * @return
-     */
-    public String getCityCountry() {
-        return "Paris,France";
-    }
 
     /**
      * Leads you to Second Activty where user chooses wether a person is single or not
@@ -465,10 +479,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(SecondIntent);
     }
 
-    public void goToSplashScreenActivity() {
-        Intent TheIntent = new Intent(MainActivity.this, DescriptionActivity.class);
-        startActivity(TheIntent);
-    }
+
 
     /**
      * Converts Birthday to Age
@@ -482,15 +493,6 @@ public class MainActivity extends AppCompatActivity {
         Years age = Years.yearsBetween(date, LocalDate.now());
         User_Age = age.getYears();
         return age.getYears();
-    }
-
-    /**
-     * Start service which tells the Mysql Database if the user is inside a bar or not
-     */
-    private void beginLocationService() {
-        Intent ntent = new Intent(this, service.class);
-        ntent.putExtra("FbID", User_id);
-        this.startService(ntent);
     }
 
     private void verifyCapatchAndStartSignup() {
@@ -689,6 +691,16 @@ public class MainActivity extends AppCompatActivity {
     private void startSigninProcess() {
         getSignInInfo getsignininfo = new getSignInInfo();
         getsignininfo.execute("Signin", email, password);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     class getSignInInfo extends AsyncTask<String, Integer, String> {

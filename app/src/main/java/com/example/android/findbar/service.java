@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -121,16 +122,18 @@ public class service  extends Service {
     {
         Log.e(TAG, "onStartCommand");
         super.onStartCommand(intent, flags, startId);
- //       FbID = intent.getIntExtra("FbID", 0);
+        userDistinctId = (String) intent.getExtras().get("Email");
         return START_STICKY;
     }
 
     @Override
     public void onCreate()
     {
+        //android.os.Debug.waitForDebugger();
         String s = " ";
         Log.e(TAG, "onCreate");
         initializeLocationManager();
+
         database = new localDatabase(this);
         makeToast("Its opened");
 
@@ -262,6 +265,9 @@ public class service  extends Service {
         @Override
         public void onProviderDisabled(String provider) {
             Log.e(TAG, "onProviderDisabled: " + provider);
+            Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
         }
 
         @Override
