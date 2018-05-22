@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        applicationId "com.barfinder.android.findbar"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    google()
+    maven {
+        url 'https://maven.google.com/'
+        name 'Google'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation files('libs/gson-2.8.0.jar')
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    //implementation 'com.facebook.android:facebook-login'
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
+    //noinspection GradleCompatible
+    // compile 'com.google.android.gms:play-services:7.5.0'
+    implementation 'com.android.support:design:27.0.2'
+    // compile 'com.google.code.gson:gson:2.8.0'
+    implementation 'joda-time:joda-time:2.9.9'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    //noinspection GradleCompatible
+    implementation 'com.google.android.gms:play-services-maps:11.8.0'
+    implementation 'com.android.support:support-v4:27.0.2'
+    testCompile 'junit:junit:4.12'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.weiwangcn.betterspinner:library-material:1.1.0'
+    implementation 'com.google.android.gms:play-services-safetynet:11.8.0'
+    implementation 'com.android.support:recyclerview-v7:27.0.2'
+}
